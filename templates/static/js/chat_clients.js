@@ -1,5 +1,4 @@
 (async function () {
-
   await window.socketIoReady;
   // ---------------------------------DOM Elements--------------------------------
 
@@ -11,7 +10,7 @@
   const groupList = document.getElementById("groupList");
   const chatHeaderTitle = document.querySelector(".chat-title h2");
   const fileStagingArea = document.getElementById("file-staging-area");
-  // MỚI: Lấy thêm các nút và input mới
+
   const imageBtn = document.getElementById("imageBtn");
   const fileBtn = document.getElementById("fileBtn");
   const imageInput = document.getElementById("imageInput");
@@ -26,9 +25,7 @@
   let stagedFiles = [];
   const MAX_TOTAL_SIZE = 100 * 1024 * 1024; // 100MB
   const MAX_FILE_COUNT = 10;
-  // =============================== STATE MỚI CHO MÃ HÓA ==========================
-  let userKeyPair = null; // Cặp khóa của người dùng
-  let forumSharedKeys = {}; // Lưu trữ khóa chia sẻ với từng người dùng {forumId: sharedKey}
+
   // ======================== XÁC THỰC NGƯỜI DÙNG ========================
   if (!user || !localStorage.getItem("accessToken")) {
     if (overlay) {
@@ -40,7 +37,7 @@
     }, 2000);
     return;
   }
-  // ===========================KHỞI TẠO MÃ HÓA==========================
+    // ===========================KHỞI TẠO MÃ HÓA==========================
   async function initializeCryption() {
     const privateKeyJWK = localStorage.getItem(`privateKey_${user.id}`);
     if (privateKeyJWK) {
@@ -78,28 +75,23 @@
     socket.on("connect", () =>
       console.log("Kết nối thành công với Socket.IO", socket.id)
     );
-    socket.on("newMessage", async (message) => {
+    socket.on("newMessage", (message) => {
       if (message.forum_id === currentForumId) {
-        if (message.content_text === 'text' && forumSharedKeys[currentForumId]){
-          // Mã hóa nội dung tin nhắn nếu có khóa chia sẻ
-          message.content_text = cryptoService.decryptMessage(forumSharedKeys[currentForumId], message.content_text);
-        }
         renderSingleMessage(message, false);
         scrollToBottom();
       }
     });
-    // MỚI: Lắng nghe sự kiện lỗi khi gửi tin
     socket.on("sendMessageError", (error) => {
       alert(`Lỗi gửi tin nhắn: ${error.message}`);
     });
   }
+  
   // ======================== TIN NHẮN VÀ FILE ===================================
-  // --------------------- Render từng tin nhắn + file đã gửi --------------------------
   function renderSingleMessage(msg, isLocal) {
     const messageDiv = document.createElement("div");
-    const isSentByMe = msg.user_id === user.id;
+    const isSentByMe = parseInt(msg.user_id) === parseInt(user.id);
     messageDiv.className = `message ${isSentByMe ? "sent" : "received"}`;
-    if (isLocal) messageDiv.style.opacity = "0.7"; // Làm mờ tin nhắn đang gửi
+    if (isLocal) messageDiv.style.opacity = "0.7";
 
     const messageTime = new Date(msg.created_at).toLocaleTimeString("vi-VN", {
       hour: "2-digit",
@@ -108,89 +100,49 @@
 
     let messageBubbleContent = "";
     if (msg.content_type === "text") {
-      // -----------Hiển thị nội dung giải mã
-      messageBubbleContent = `<div class="message-bubble">${msg.content_text.replace(
-        /\n/g,
-        "<br>"
-      )}</div>`;
+      messageBubbleContent = `<div class="message-bubble">${msg.content_text.replace(/\n/g, "<br>")}</div>`;
     } else {
-      const fileName = msg.file_name || "Tập tin không tên";
-      const fileId = `file-${msg.id}`;
-      const downloadPath = `${API_CONFIG.getApiUrl()}/uploads/${msg.file_path
-        .split(/[\\/]/)
-        .pop()}`;
+      const downloadPath = `${API_CONFIG.getApiUrl()}/api/download/${msg.file_name}`;
       const fileSize = msg.file_size ? (msg.file_size / 1024 / 1024).toFixed(2) + " MB" : "";
+      
       messageBubbleContent = `
-            <div class="message-bubble file-message" ${fileId}>
-                <div class="file-icon-wrapper">
-                    <i class="fas fa-file-alt"></i>
-                </div>
-                <div class="file-info">
-                    <div class="file-name">${msg.file_name || "Tập tin"}</div>
-                    <div class="file-size">${fileSize}</div>
-                </div>
-                <a href="${downloadPath}" download="${
-        msg.file_name
-      }" class="download-button" title="Tải xuống">
-                    <i class="fas fa-download"></i>
-                </a>
-            </div>`;
+        <div class="message-bubble file-message">
+            <div class="file-icon-wrapper">
+                <i class="fas fa-file-alt"></i>
+            </div>
+            <div class="file-info">
+                <div class="file-name">${msg.content_text || "Tập tin"}</div>
+                <div class="file-size">${fileSize}</div>
+            </div>
+            <a href="${downloadPath}" class="download-button" title="Tải xuống" target="_blank" rel="noopener noreferrer">
+                <i class="fas fa-download"></i>
+            </a>
+        </div>`;
     }
-
-    (async () =>{
-      const sharedKey = forumSharedKeys[currentForumId];
-      if (!sharedKey) return;
-      try{
-        const fileUrl = `${API_CONFIG.getApiUrl()}/uploads/${msg.file_path.split(/[\\/]/).pop()}`;
-      }catch (error) {
-        console.error("Lỗi xữ lý file mã hóa",error);
-        const fileElement = document.getElementById(fileId);
-        if (fileElement) fileElement.innerHTML = `<div class="file-icon-wrapper" 
-        style="color: red;"><i class="fas fa-exclamation-triangle"></i>
-        </div><div class="file-info"><div class="file-name">
-        Lỗi: ${fileName}</div></div>`;
-    })();
 
     const avatarUrl = msg.avatar ? `/uploads/${msg.avatar}` : "/templates/static/images/logoT3V.png";
     messageDiv.innerHTML = `
-            <div class="message-avatar">
-                <img src="${avatarUrl}" alt="avatar">
+        <div class="message-avatar">
+            <img src="${avatarUrl}" alt="avatar">
+        </div>
+        <div class="message-content">
+            <div class="message-header">
+                <span class="message-sender">${isSentByMe ? "Bạn" : msg.Name}</span>
+                <span class="message-time">${messageTime}</span>
             </div>
-            <div class="message-content">
-                <div class="message-header">
-                    <span class="message-sender">${
-                      isSentByMe ? "Bạn" : msg.Name
-                    }</span>
-                    <span class="message-time">${messageTime}</span>
-                </div>
-                ${messageBubbleContent}
-            </div>
-        `;
+            ${messageBubbleContent}
+        </div>`;
     messagesArea.appendChild(messageDiv);
   }
 
   function renderMessages(messages) {
     messagesArea.innerHTML = "";
     if (messages.length === 0) {
-      messagesArea.innerHTML =
-        '<p style="text-align: center; color: #888;">Chưa có tin nhắn nào. Hãy là người đầu tiên!</p>';
+      messagesArea.innerHTML = '<p style="text-align: center; color: #888;">Chưa có tin nhắn nào. Hãy là người đầu tiên!</p>';
       return;
     }
-    const sharedKey = forumSharedKeys[currentForumId];
-    if (!sharedKey) {
-      messagesArea.innerHTML = '<p style="text-align: center; color: red;">Lỗi: Không thể thiết lập khóa mã hóa cho nhóm này.</p>';
-      return;
-    }
-    Promise.all(messages.map(async (msg) => {
-      if (msg.content_type === 'text') {
-        msg.content_text = await cryptoService.decryptMessage(sharedKey, msg.content_text);
-      }
-      
-      return msg;
-      })).then(decryptedMessages => {
-        decryptedMessages.forEach(msg => renderSingleMessage(msg, false));
-        scrollToBottom();
-      });
+    messages.forEach((msg) => renderSingleMessage(msg, false));
+    scrollToBottom();
   }
 
   function updateStagingArea() {
@@ -201,29 +153,20 @@
       const fileItem = document.createElement("div");
       fileItem.className = "staged-file-item";
       fileItem.innerHTML = `
-                <span class="staged-file-icon"><i class="fas fa-file"></i></span>
-                <div class="staged-file-info">
-                    <div class="staged-file-name">${file.name}</div>
-                    <div class="staged-file-size">${(
-                      file.size /
-                      1024 /
-                      1024
-                    ).toFixed(2)} MB</div>
-                </div>
-                <button class="remove-staged-file" data-index="${index}">&times;</button>
-            `;
+          <span class="staged-file-icon"><i class="fas fa-file"></i></span>
+          <div class="staged-file-info">
+              <div class="staged-file-name">${file.name}</div>
+              <div class="staged-file-size">${(file.size / 1024 / 1024).toFixed(2)} MB</div>
+          </div>
+          <button class="remove-staged-file" data-index="${index}">&times;</button>`;
       fileStagingArea.appendChild(fileItem);
     });
 
-    sendBtn.disabled =
-      messageInput.value.trim() === "" && stagedFiles.length === 0;
+    sendBtn.disabled = messageInput.value.trim() === "" && stagedFiles.length === 0;
 
     document.querySelectorAll(".remove-staged-file").forEach((button) => {
       button.addEventListener("click", (e) => {
-        const indexToRemove = parseInt(
-          e.currentTarget.getAttribute("data-index"),
-          10
-        );
+        const indexToRemove = parseInt(e.currentTarget.getAttribute("data-index"), 10);
         stagedFiles.splice(indexToRemove, 1);
         updateStagingArea();
       });
@@ -232,10 +175,7 @@
 
   function handleFileSelection(event) {
     const files = Array.from(event.target.files);
-    let currentTotalSize = stagedFiles.reduce(
-      (acc, file) => acc + file.size,
-      0
-    );
+    let currentTotalSize = stagedFiles.reduce((acc, file) => acc + file.size, 0);
 
     if (stagedFiles.length + files.length > MAX_FILE_COUNT) {
       alert(`Bạn chỉ có thể chọn tối đa ${MAX_FILE_COUNT} tệp.`);
@@ -258,56 +198,34 @@
 
   async function executeSend() {
     const messageText = messageInput.value.trim();
-
     if (messageText === "" && stagedFiles.length === 0) return;
-
-    const sharedKey = forumSharedKeys[currentForumId];
-      if (!sharedKey) {
-        alert("Lỗi: không thể gửi tin nhắn vì chưa thiết lập được kênh mã hóa an toàn.");
-      return;
-    }
-
     sendBtn.disabled = true;
 
     try {
-      if (stagedFiles.length > 0) { 
-        showNotification("Đang mã hóa tệp tin và tải lên ...");
-        const file = stagedFiles[0];
-
-        // Chuyển đổi tệp file sang dạng nhị phân 
-        const arrayBuffer = await file.arrayBuffer();
-
-        // Mã hóa tệp tin 
-        const encryptedBuffer = await cryptoService.encrypFile
-
-          const formData = new FormData();
-          stagedFiles.forEach((file) => {
+      if (stagedFiles.length > 0) {
+        const formData = new FormData();
+        stagedFiles.forEach((file) => {
           formData.append("file", file);
         });
-
         formData.append("forumId", currentForumId);
         formData.append("userId", user.id);
-
         if (messageText !== "") {
           formData.append("messageText", messageText);
         }
-
+        showNotification("Đang tải lên tệp...");
         const response = await apiService.fetch("/api/upload", {
           method: "POST",
           body: formData,
         });
-
         if (!response.success) {
           throw new Error(response.message || "Lỗi tải tệp.");
         }
-
         showNotification("Tải tệp lên thành công!");
       } else if (messageText !== "") {
-        const encryptedText = await cryptoService.encryptMessage(sharedKey, messageText);
         socket.emit("sendMessage", {
           forumId: currentForumId,
           userId: user.id,
-          messageText: encryptedText, // Gửi đi message đã mã hóa
+          messageText: messageText,
         });
       }
     } catch (error) {
@@ -323,113 +241,68 @@
     }
   }
 
-  async function selectForum(id, forumName, members) {
+  async function selectForum(id, forumName) {
     if (id === currentForumId) return;
-
     if (socket && currentForumId) {
       socket.emit("leaveForum", { forumId: currentForumId });
     }
-
     currentForumId = id;
     chatHeaderTitle.textContent = forumName;
-
     messagesArea.innerHTML = '<div class="loader"></div>';
     memberListContainer.innerHTML = '<div class="loader"></div>';
-
-    //! Lưu ý từ Thông: Mô hình nhóm, là một cách đơn giản mà tất cả thành viên trong nhóm dùng chung 1 khóa đối xứng
-    //! Ở đây, Thông sử dụng người tạo nhóm sẽ tạo ra một khóa chung và phân phối nó
-    //! Và ta sẽ đơn giản hóa bằng cách dùng public key của người tạo nhóm kết hợp với private key của user hiện tại
-    try {
-      const otherMember = members.find(m=>m.id !== user.id);
-      if (otherMember){
-        const ohtrPublicKey = await cryptoService.importPublicKeyFromJWK(JSON.parse(otherMember.publicKey));
-        const sharedKey = await cryptoService.deriveSharedKey(userKeyPair.privateKey, ohtrPublicKey);
-        forumSharedKeys[currentForumId] = sharedKey;
-      }else if (members.length === 1) { //Trường hợp nhóm chỉ có 1 thành viên
-        forumSharedKeys[currentForumId] = 'don_coi'; 
-      }
-      else {
-        throw new Error('Không tìm thấy thành viên hợp lệ để tạo khóa phiên.');
-      }
-    } catch (e) {
-        console.error("Lỗi khi tạo khóa phiên:", e);
-        alert("Không thể thiết lập kết nối mã hóa cho nhóm này.");
-        return;
-    }
-    
     if (socket) {
-      socket.emit("joinForum", { forumId: id, userId: user.id });
+      socket.emit("joinRoom", { forumId: currentForumId });
     }
-    try{
-      const messagesRes = await apiService.fetch(`/api/forums/${currentForumId}/messages`);
-      if (messagesRes.success) {
-        renderMessages(messagesRes.data);
-      }
-      renderMembers(members);
-    }catch(error) {
+    try {
+      const [messagesRes, membersRes] = await Promise.all([
+        apiService.fetch(`/api/forums/${currentForumId}/messages`),
+        apiService.fetch(`/api/forums/${currentForumId}/members`),
+      ]);
+      if (messagesRes.success) renderMessages(messagesRes.data);
+      if (membersRes.success) renderMembers(membersRes.data);
+    } catch (error) {
       console.error(`Lỗi khi tải dữ liệu cho forum ${currentForumId}:`, error);
       messagesArea.innerHTML = `<p style="color: red; text-align: center;">${error.message}</p>`;
     }
   }
 
-  // //Danh sách thành viên
   function renderMembers(members) {
     if (!memberListContainer) return;
     memberListContainer.innerHTML = "";
     members.forEach((member) => {
-      const avatarUrl = member.avatar
-        ? `/uploads/${member.avatar}`
-        : "/uploads/logoT3V.png";
-
+      const avatarUrl = member.avatar ? `/uploads/${member.avatar}` : "/templates/static/images/logoT3V.png";
       const memberItem = document.createElement("div");
       memberItem.className = "member-item";
       memberItem.innerHTML = `
-                <div class="member-avatar">
-                    <img src="${avatarUrl}" alt="avatar" style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <div class="member-info">
-                    <div class="member-name">${member.Name}</div>
-                    
-                </div>
-            `;
+          <div class="member-avatar">
+              <img src="${avatarUrl}" alt="avatar" style="width:100%; height:100%; object-fit:cover;">
+          </div>
+          <div class="member-info">
+              <div class="member-name">${member.Name}</div>
+          </div>`;
       memberListContainer.appendChild(memberItem);
     });
   }
 
-  //Danh sách nhóm chat
   function rendererFormList(forums) {
     if (!groupList) return;
-    groupList.innerHTML = ""; // Xóa nội dung cũ
+    groupList.innerHTML = "";
     forums.forEach((forum) => {
       const forumItem = document.createElement("div");
       forumItem.className = "group-item";
       forumItem.innerHTML = `
-                <div class="group-item-avatar"><i class="fas fa-users"></i></div>
-                <div class="group-item-info">
-                    <div class="group-item-name">${forum.name}</div>
-                    <div class="group-item-lastmsg">Topic: ${
-                      forum.topic || "Chưa có chủ đề"
-                    }</div>
-                </div> `;
-
-      forumItem.addEventListener("click", async () => {
-      // Lấy danh sách thành viên chi tiết TRƯỚC KHI chọn forum
-              try {
-                  const membersRes = await apiService.fetch(`/api/forums/${forum.id}/members/details`);
-                  if(membersRes.success) {
-                      document.querySelectorAll('.group-item').forEach(item => item.classList.remove('active'));
-                      forumItem.classList.add('active');
-                      selectForum(forum.id, forum.name, membersRes.data);
-                  } else {
-                      throw new Error(membersRes.message);
-                  }
-              } catch(error) {
-                  alert('Không thể lấy thông tin thành viên cho nhóm này.');
-                  console.error(error);
-              }
-          });
-          groupList.appendChild(forumItem);
+          <div class="group-item-avatar"><i class="fas fa-users"></i></div>
+          <div class="group-item-info">
+              <div class="group-item-name">${forum.name}</div>
+              <div class="group-item-lastmsg">Topic: ${forum.topic || "Chưa có chủ đề"}</div>
+          </div>`;
+      forumItem.addEventListener("click", () => {
+        document.querySelectorAll(".group-item").forEach((item) => item.classList.remove("active"));
+        forumItem.classList.add("active");
+        selectForum(forum.id, forum.name);
       });
+      groupList.appendChild(forumItem);
+    });
   }
 
   async function loadUserForums() {
@@ -443,8 +316,7 @@
           selectForum(firstForum.id, firstForum.name);
         } else {
           chatHeaderTitle.textContent = "Chưa có diễn đàn";
-          messagesArea.innerHTML =
-            '<p style="text-align: center;">Hãy tạo hoặc tham gia một diễn đàn để bắt đầu.</p>';
+          messagesArea.innerHTML = '<p style="text-align: center;">Hãy tạo hoặc tham gia một diễn đàn để bắt đầu.</p>';
         }
       }
     } catch (error) {
@@ -466,70 +338,14 @@
     notification.className = "notification show";
     notification.innerHTML = `<i class="fas fa-info-circle"></i> <span>${message}</span>`;
     document.body.appendChild(notification);
-
     setTimeout(() => {
       notification.classList.remove("show");
       setTimeout(() => notification.remove(), 300);
     }, 3000);
   }
-
-  const showCreateGroupModalBtn = document.getElementById(
-    "showCreateGroupModalBtn"
-  );
-  const createGroupModal = document.getElementById("createGroupModal");
-  const closeCreateGroupModalBtn = document.getElementById(
-    "closeCreateGroupModal"
-  );
-  const createGroupForm = document.getElementById("createGroupForm");
-
-  if (showCreateGroupModalBtn) {
-    showCreateGroupModalBtn.addEventListener("click", () => {
-      if (createGroupModal) createGroupModal.style.display = "flex";
-    });
-  }
-  if (closeCreateGroupModalBtn) {
-    closeCreateGroupModalBtn.addEventListener("click", () => {
-      if (createGroupModal) createGroupModal.style.display = "none";
-    });
-  }
-  window.addEventListener("click", (event) => {
-    if (event.target === createGroupModal)
-      createGroupModal.style.display = "none";
-  });
-  if (createGroupForm) {
-    createGroupForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const groupNameInput = document.getElementById("groupName");
-      const groupTopicInput = document.getElementById("groupTopic");
-      const groupData = {
-        name: groupNameInput.value.trim(),
-        topic: groupTopicInput.value.trim(),
-      };
-      if (!groupData.name) {
-        alert("Vui lòng nhập tên nhóm.");
-        return;
-      }
-      try {
-        const response = await apiService.fetch("/api/forums", {
-          method: "POST",
-          body: JSON.stringify(groupData),
-        });
-        alert(`Tạo nhóm "${response.data.name}" thành công!`);
-        createGroupModal.style.display = "none";
-        createGroupForm.reset();
-        loadUserForums();
-      } catch (error) {
-        console.error("Lỗi khi tạo nhóm:", error);
-        alert(error.message || "Đã có lỗi xảy ra khi tạo nhóm.");
-      }
-    });
-  }
-
+  
   // ================= SỰ KIỆN & HÀM MAIN ================
-
   sendBtn.addEventListener("click", executeSend);
-
-  // MỚI: Gán sự kiện cho các nút và input file
   imageBtn.addEventListener("click", () => imageInput.click());
   fileBtn.addEventListener("click", () => fileInput.click());
   imageInput.addEventListener("change", handleFileSelection);
@@ -547,13 +363,11 @@
     this.style.height = Math.min(this.scrollHeight, 120) + "px";
     sendBtn.disabled = this.value.trim() === "" && stagedFiles.length === 0;
   });
+
   // ======================== CONTEXT MENU CHO TIN NHẮN ========================
   const messageContextMenu = document.getElementById("messageContextMenu");
-  const downloadContextBtn = messageContextMenu.querySelector(".context-item"); // Giả sử nút tải về là nút đầu tiên
+  let currentContextMenuTarget = null;
 
-  let currentContextMenuTarget = null; // Lưu trữ tin nhắn đang được click chuột phải
-
-  // Hàm ẩn context menu
   function hideContextMenu() {
     if (messageContextMenu) {
       messageContextMenu.classList.remove("show");
@@ -561,46 +375,21 @@
     currentContextMenuTarget = null;
   }
 
-  // Lắng nghe sự kiện click chuột phải trên vùng tin nhắn
   messagesArea.addEventListener("contextmenu", (event) => {
-    // Chỉ hoạt động trên các tin nhắn là file
     const targetFileMessage = event.target.closest(".file-message");
     if (!targetFileMessage) {
       return;
     }
 
-    event.preventDefault(); // Ngăn menu mặc định của trình duyệt
+    event.preventDefault();
     currentContextMenuTarget = targetFileMessage;
 
-    // Hiển thị menu tại vị trí con trỏ
     messageContextMenu.style.top = `${event.clientY}px`;
     messageContextMenu.style.left = `${event.clientX}px`;
     messageContextMenu.classList.add("show");
   });
 
-  // Lắng nghe sự kiện click trên nút "Tải về" của context menu
-  downloadContextBtn.addEventListener("click", () => {
-    if (!currentContextMenuTarget) return;
 
-    const filePath = currentContextMenuTarget.getAttribute("data-file-path");
-    const fileName = currentContextMenuTarget.getAttribute("data-file-name");
-
-    if (filePath && fileName) {
-      // Tạo một thẻ <a> ẩn để kích hoạt việc tải xuống
-      const downloadLink = document.createElement("a");
-      downloadLink.href = `${API_CONFIG.getApiUrl()}/uploads/${filePath
-        .split(/[\\/]/)
-        .pop()}`;
-      downloadLink.download = fileName; // Thuộc tính này yêu cầu trình duyệt tải file về
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      document.body.removeChild(downloadLink);
-    }
-
-    hideContextMenu(); // Ẩn menu sau khi click
-  });
-
-  // Lắng nghe sự kiện click toàn cục để ẩn menu khi click ra ngoài
   window.addEventListener("click", hideContextMenu);
 
   initializeSocket();

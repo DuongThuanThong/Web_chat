@@ -75,6 +75,35 @@ function createFileRouter(io) {
         }
     });
 
+
+    router.get('/download/:filename', (req, res) => {
+        const { filename } = req.params;
+        // Đường dẫn an toàn đến thư mục uploads
+        const uploadsDir = path.join(__dirname, '..', '..', 'uploads');
+        const filePath = path.join(uploadsDir, filename);
+
+        // Kiểm tra xem tệp có tồn tại trong thư mục uploads không để tránh lỗi bảo mật
+        fs.access(filePath, fs.constants.F_OK, (err) => {
+            if (err) {
+                console.error("Lỗi truy cập file:", err);
+                return res.status(404).send('Tệp không tồn tại.');
+            }
+
+            // Sử dụng res.download() của Express
+            // Express sẽ tự động đặt header Content-Disposition
+            // Điều này buộc trình duyệt phải tải tệp xuống.
+            res.download(filePath, (errDownload) => {
+                if (errDownload) {
+                    console.error("Lỗi khi tải file:", errDownload);
+                    // Không gửi response lỗi nếu header đã được gửi
+                    if (!res.headersSent) {
+                        res.status(500).send('Không thể tải tệp.');
+                    }
+                }
+            });
+        });
+    });
+
     return router;
 }
 
