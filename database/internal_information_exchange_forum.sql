@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th6 29, 2025 lúc 09:15 AM
+-- Thời gian đã tạo: Th6 30, 2025 lúc 09:48 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -109,7 +109,8 @@ INSERT INTO `if_forum_members` (`id`, `forum_id`, `user_id`, `joined_at`) VALUES
 (14, 11, 9999, '2025-06-19 03:46:27'),
 (42, 11, 317750419, '2025-06-25 06:26:45'),
 (43, 4, 317750419, '2025-06-27 10:02:45'),
-(44, 11, 277803483, '2025-06-28 08:42:55');
+(44, 11, 277803483, '2025-06-28 08:42:55'),
+(45, 11, 892849308, '2025-06-30 07:26:06');
 
 -- --------------------------------------------------------
 
@@ -138,7 +139,8 @@ INSERT INTO `if_messages` (`id`, `forum_id`, `user_id`, `content_type`, `content
 (21, 11, 9999, 'text', '777', NULL, NULL, NULL, NULL, '2025-06-24 10:33:33'),
 (23, 11, 9999, 'text', 'gggg', NULL, NULL, NULL, NULL, '2025-06-24 10:33:49'),
 (24, 11, 317750419, 'text', 'chaof', NULL, NULL, NULL, NULL, '2025-06-26 07:19:54'),
-(25, 11, 277803483, 'text', 'chào', NULL, NULL, NULL, NULL, '2025-06-28 08:57:22');
+(25, 11, 277803483, 'text', 'chào', NULL, NULL, NULL, NULL, '2025-06-28 08:57:22'),
+(26, 11, 892849308, 'text', 'mình là thành viên mới', NULL, NULL, NULL, NULL, '2025-06-30 07:33:15');
 
 -- --------------------------------------------------------
 
@@ -206,7 +208,11 @@ INSERT INTO `if_refresh_tokens` (`id`, `user_id`, `token`, `expires_at`, `create
 (139, 317750419, 'c2d9bc887487d576d6bcc55ad3d2d7dd465821423112d16639c780294c088c153b3d118dbfbf65d23f8e6a8291b1c322f5067ced47c3b15a02e49e41cd08aba2', '2025-07-05 20:05:52', '2025-06-28 13:05:52'),
 (140, 277803483, 'c42334a21e5951ba7ba8fe77c8b6ae1a0563e6fced7f832fae96108f00a6593734009d5b00fcf5586da2f16d8b19fbf870c1d214bcecbe05815993ef5eff5285', '2025-07-05 20:06:15', '2025-06-28 13:06:15'),
 (141, 317750419, 'c2e44b14ab8f6b7541beea507f43523047f74c996cf548339bb1923702b60210667b2a4098d0f9bce08292b26ba7681827c4bf092ab2a272b30767c05dd6208c', '2025-07-05 20:28:15', '2025-06-28 13:28:15'),
-(142, 317750419, '2ab381fcc50801da628b560b91d272968114a1630774650a0fbc698c56104113965e529bafdca499f6211a0b768f0c9fa969bfdfc7fe859454a9a8b2c8d6da36', '2025-07-05 22:45:14', '2025-06-28 15:45:14');
+(142, 317750419, '2ab381fcc50801da628b560b91d272968114a1630774650a0fbc698c56104113965e529bafdca499f6211a0b768f0c9fa969bfdfc7fe859454a9a8b2c8d6da36', '2025-07-05 22:45:14', '2025-06-28 15:45:14'),
+(143, 317750419, '16556eb44731d6aecc31704bbe16be2ac5a0736c9acba6bcfa14cce0f790c5b1c849b3944d99944dcd9657b398c7e46195e34857bac45a2a491a3321224ca89d', '2025-07-06 14:23:27', '2025-06-29 07:23:27'),
+(144, 317750419, '66ffbeaa992383efeaba09938e0d05a2c84a35a0d9f0fbc79628112ad678f0b48782ea69e8573c6a3cedd44c2de03736634e3c74649b929f5698a8b2daa44fcc', '2025-07-06 14:50:30', '2025-06-29 07:50:30'),
+(145, 9999, '0981cd698066a6f153f12941f9f13aae86ef66df81311be394ea17b89b9ea5daeb07ee6354272c4117381134693efcab52e2d145cd01520049cea45e852f603c', '2025-07-06 20:16:54', '2025-06-29 13:16:54'),
+(146, 317750419, '7298ebeffa986a712887862120b6fc33241193f0bf158504a852c8994418406c51d8e188bee0496e9c305329b32636031de7f1f219a858a3cb4230c0773b7c96', '2025-07-07 11:03:47', '2025-06-30 04:03:47');
 
 -- --------------------------------------------------------
 
@@ -230,8 +236,9 @@ CREATE TABLE `if_users` (
 
 INSERT INTO `if_users` (`id`, `Name`, `gender`, `username`, `email`, `password_hash`, `avatar`) VALUES
 (9999, 'T3V', '0', 'admin', 'thienobita0203@gmail.com', '$2b$10$u7RlU.oheJM3pD35sXUoJOMnO/todjT1M0lnzNXyqH2UgFQO7YTM6', NULL),
-(277803483, 'ồ ze', '0', 'NttDz1', 'nttsoradz1@gmail.com', '$2b$10$AGplOVy4ZErEld/r3WD1LuV6hDoycEzxZ9iDKJEeYA90VLneM0fDi', '1751115991514.jpg'),
-(317750419, 'Thiên đẹp trai', '0', 'thien', 'thethien2k5@gmail.com', '$2b$10$7LTfpO2djCWhclSkHoWw8eNAlrALk2hXbfJ6XuKjqWrztuw7VVi9i', '1751018831781.jpg');
+(277803483, 'ồ ze', '0', 'NttDz1', 'nttsoradz1@gmail.com', '$2b$10$AGplOVy4ZErEld/r3WD1LuV6hDoycEzxZ9iDKJEeYA90VLneM0fDi', '1751269106879.jpg'),
+(317750419, 'Thiên đẹp trai', '0', 'thien', 'thethien2k5@gmail.com', '$2b$10$7LTfpO2djCWhclSkHoWw8eNAlrALk2hXbfJ6XuKjqWrztuw7VVi9i', '1751268849641.jpg'),
+(892849308, 'Thông Hướng Dương', '0', 'thiendz', 'nttsora0203@gmail.com', '$2b$10$juGK8H6/s9lrdREq6iz3.esPQ3jY45mq/rMB0jU1dmp2LYz.w86mq', '1751268826626.jpg');
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -297,19 +304,19 @@ ALTER TABLE `if_forums`
 -- AUTO_INCREMENT cho bảng `if_forum_members`
 --
 ALTER TABLE `if_forum_members`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT cho bảng `if_messages`
 --
 ALTER TABLE `if_messages`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT cho bảng `if_refresh_tokens`
 --
 ALTER TABLE `if_refresh_tokens`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=143;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=147;
 
 --
 -- Các ràng buộc cho các bảng đã đổ

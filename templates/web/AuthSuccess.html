@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tự động xác thực</title>
+    <style>
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        padding: 0px;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background-color: #7494ec;
+        display: flex;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      a {
+        text-decoration: none;
+      }
+
+      button {
+        border: none;
+        background: none;
+        cursor: pointer;
+      }
+
+      img {
+        max-width: 100%;
+        height: auto;
+        object-fit: cover;
+      }
+      .container {
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 0 40px;
+      }
+      .box {
+        display: flex;
+        height: 100%;
+        width: 100%;
+      }
+      span {
+        position: relative;
+        top: 20px;
+        color: #fff;
+        display: inline-block;
+        font-size: 5rem;
+        text-shadow: 0 1px 0 #b7b7b7, 0 2px 0 #b7b7b7, 0 3px 0 #b7b7b7,
+          0 4px 0 #b7b7b7, 0 5px 0 #b7b7b7, 0 6px 0 transparent,
+          0 7px 0 transparent, 0 8px 0 transparent, 0 9px 0 transparent,
+          0 10px 10px rgba(0, 0, 0, 0.5);
+        animation: anim 1s 0.4s ease infinite alternate;
+      }
+      h1 span:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+      h1 span:nth-child(2) {
+        animation-delay: 0.3s;
+      }
+      h1 span:nth-child(3) {
+        animation-delay: 0.5s;
+      }
+      h1 span:nth-child(4) {
+        animation-delay: 0.7s;
+      }
+      h1 span:nth-child(5) {
+        animation-delay: 0.9s;
+      }
+
+      @keyframes anim {
+        100% {
+          top: -20px;
+          text-shadow: 0 1px 0 #ccc, 0 2px 0 #ccc, 0 3px 0 #ccc, 0 4px 0 #ccc,
+            0 5px 0 #ccc, 0 6px 0 #ccc, 0 7px 0 #ccc, 0 8px 0 #ccc, 0 9px 0 #ccc,
+            0 60px 30px rgba(0, 0, 0, 0.3);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>
+      <span>V</span> <span>u</span><span>i</span>
+      <span>&nbsp;L</span>
+      <span>ò</span><span>n</span><span>g</span> <span>&nbsp;Đ</span
+      ><span>ợ</span><span>i</span>
+    </h1>
+
+    <script src="/templates/static/js/app-config.js"></script>
+    <script>
+      (async function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get("token");
+        const apiURL = API_CONFIG.getApiUrl();
+
+        if (!token) {
+          alert("Không tìm thấy token!");
+          return;
+        }
+
+        try {
+            const res = await fetch(apiURL + "/api/auto-auth", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ token }),
+            });    
+          const data = await res.json();
+
+          if (data.success) {
+            localStorage.setItem("accessToken", data.accessToken);
+            localStorage.setItem("user", JSON.stringify(data.user));
+            alert("✅ Đăng nhập tự động thành công!");
+            window.location.href = "/index.html";
+          } else {
+            alert(data.message);
+          }
+        } catch (err) {
+          console.error("Lỗi xác thực:", err);
+          alert("Không thể kết nối tới server.");
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -1,4 +1,4 @@
-const { CheckUserIDFromDatabase } = require("./router/CheckAndGetData");
+const { CheckUserNameFromDatabase,CheckUserIDFromDatabase } = require("./router/CheckAndGetData");
 const {
   AddNewUsersByCallingDatabase,
   AddUsersToTheGroupInTheDatabase,
@@ -7,6 +7,9 @@ const bcrypt = require("bcrypt");
 
 // Xử lý thông tin người mới đăng ký
 async function ProcessingInformationWhenAddingUsers(username, email, password) {
+  if(!CheckUserNameFromDatabase(username)){
+    return false;
+  }
   //Tao ID chỉ có số tự nhiên N độ dài 12
   let attempts = 0;
   var userId = "";

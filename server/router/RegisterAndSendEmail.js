@@ -7,6 +7,10 @@ const { authenticate } = require("@google-cloud/local-auth");
 const { google } = require("googleapis");
 const { CheckEmail, CheckUserName } = require("../../mysql/dbUser");
 const { ProcessingInformationWhenAddingUsers } = require("../UserProcessing");
+const jwt = require("jsonwebtoken"); //thư viện tạo token
+const { getActiveIP, FE_PORT, BE_PORT, jwtSecret } = require("../config"); // Lấy IP đang hoạt động
+const { handleLogin } = require("./CheckAndGetData");
+const mail = require("@sendgrid/mail");
 
 require("dotenv").config(); // Vẫn hữu ích cho các biến env tiềm năng khác
 
@@ -216,7 +220,7 @@ router.post("/send-otp", async (req, res) => {
     });
   }
 
-  const { email, username } = req.body;
+  const { email, username, password } = req.body;
   // kiểm tra thông tin đăng ký
   const usernameRegex = /^[a-zA-Z0-9]+$/;
   if (!usernameRegex.test(username)) {
@@ -267,7 +271,7 @@ router.post("/send-otp", async (req, res) => {
   // Email người gửi sẽ là email đã xác thực qua token.json
   // Đối với header "From", có thể set nhưng Gmail thường sẽ dùng user đã xác thực.
   // Lấy email của user đã xác thực.
-  let senderEmailAddress = "thiennt4951@ut.edu.vn"; // hoặc email mặc định của bạn
+  const senderEmailAddress = "thiennt4951@ut.edu.vn"; // hoặc email mặc định của bạn
 
   try {
     const profile = await gmailService.users.getProfile({ userId: "me" });
@@ -281,11 +285,24 @@ router.post("/send-otp", async (req, res) => {
 
   // để sinh OTP
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  //Tạo token chứa info
+  const payload = {
+    email: email,
+    username: username,
+    password: password, //mã hóa mật khẩu
+  };
+  const token = jwt.sign(payload, jwtSecret, {
+    expiresIn: "15m",
+  });
+
+  const Ip = getActiveIP() + ":" + FE_PORT;
+  // const UrlAutoAuth = `https://${Ip}/api/auto-auth?token=${token}`; //Tạo link gửi đăng ký tự động
+  const UrlAutoAuth = `https://${Ip}/pages/AuthSuccess.html?token=${token}`;
 
   // Nội dung HTML động
   const subject = "Xác thực tài khoản Diễn đàn T3V"; // Tiêu đề
   const html_content = `
-  <!DOCTYPE html>
+    <!DOCTYPE html>
   <html lang="vi">
   <head>
       <meta charset="UTF-8">
@@ -305,6 +322,8 @@ router.post("/send-otp", async (req, res) => {
           .email-footer { background-color: #f8f9fa; color: #6c757d; padding: 20px; text-align: center; font-size: 12px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }
           .email-footer p { margin: 5px 0; }
           .highlight { color: #7494ec; font-weight: bold; }
+          .click-me-text {text-decoration: none; text-align: center; font-size: 14px; font-weight: bold;  }
+          .click-me-text a { color: #7494ec; text-decoration: none; }
       </style>
   </head>
   <body>
@@ -315,15 +334,16 @@ router.post("/send-otp", async (req, res) => {
           </div>
           <div class="email-body">
               <p>Xin chào ${username},</p>
-              <p>Chào mừng bạn đến với cộng đồng <span class="highlight">Diễn đàn T3V</span>! Để hoàn tất quá trình đăng ký và đảm bảo an toàn cho tài khoản của bạn, vui lòng sử dụng mã OTP dưới đây:</p>
+              <p>Chào mừng bạn đến với cộng đồng <span class="highlight">Kết nối học tập T3V</span>! Để hoàn tất quá trình đăng ký và đảm bảo an toàn cho tài khoản của bạn, vui lòng sử dụng mã OTP dưới đây:</p>
               <p style="text-align: center;">
                   <span class="otp-code">${otp}</span>
+                  <p class="click-me-text"><a href="${UrlAutoAuth}">Ấn vào tôi để lập tức tạo tài khoản và đăng nhập</a></p>
               </p>
               <p>Mã OTP này sẽ có hiệu lực trong vòng <span class="highlight">10 phút</span>. Vui lòng không chia sẻ mã này với bất kỳ ai.</p>
               <p>Nếu bạn không yêu cầu mã này, có thể ai đó đã cố gắng truy cập vào tài khoản của bạn. Vui lòng bỏ qua email này hoặc liên hệ với chúng tôi nếu bạn có bất kỳ lo ngại nào.</p>
               <p>Để quay lại diễn đàn và tiếp tục, bạn có thể nhấp vào nút bên dưới:</p>
               <p style="text-align: center;">
-                  <a href="[Đường dẫn đến diễn đàn của bạn]" class="cta-button">Truy Cập Diễn Đàn T3V</a>
+                  <a href="${Ip}/home" class="cta-button">Kết nối học tập cùng T3V</a>
               </p>
               <p>Cảm ơn bạn đã tham gia! Chúng tôi rất vui khi có bạn là một phần của cộng đồng.</p>
           </div>
@@ -392,11 +412,62 @@ router.post("/add-user", async (req, res) => {
     if (ok) {
       res.json({ success: true, message: "Đăng ký thành công!" });
     } else {
-      res.status(500).json({ success: false, message: "Không thể thêm user!" });
+      res.status(500).json({ success: false, message: "Tài khoản đã tồn tại!" });
     }
   } catch (err) {
     console.error("Lỗi thêm user:", err);
     res.status(500).json({ success: false, message: "Lỗi server!" });
+  }
+});
+//API tự đông thêm user
+// ✅ API tạo tài khoản và tự động đăng nhập (1 bước duy nhất)
+router.post("/auto-auth", async (req, res) => {
+  console.log("API tạo tự động đã được gọi.");
+  const token = req.body.token;
+  try {
+    const { email, username, password } = jwt.verify(token, jwtSecret);
+    console.log("/auto-auth", { username, password, email });
+    // Tạo tk tự động (gọi trực tiếp hàm xử lý)
+    const ok = await ProcessingInformationWhenAddingUsers(
+      username,
+      email,
+      password
+    );
+    if (!ok) {
+      return res.status(400).json({
+        success: false,
+        message: "Lỗi tạo tài khoản không thành công",
+      });
+    }
+
+    // Đăng nhập tự động
+    try {
+      console.log("Đăng nhập với:", username, password);
+      const loginResult = await handleLogin(username, password);
+      if (!loginResult.success) {
+        return res.status(400).json({
+          success: false,
+          message: "Lỗi đăng nhập không thành công",
+        });
+      }
+      // Thành công: trả accessToken và user info về FE
+      return res.json({
+        success: true,
+        accessToken: loginResult.accessToken,
+        user: loginResult.user,
+      });
+    } catch (err) {
+      return res.status(400).json({
+        success: false,
+        message: "Lỗi không thể đăng nhập tự động.",
+      });
+    }
+  } catch (err) {
+    console.error("❌ Lỗi trong /api/auto-auth:", err.message);
+    return res.status(400).json({
+      success: false,
+      message: "Lỗi không thể tạo tài khoản và đăng nhập tự động.",
+    });
   }
 });
 

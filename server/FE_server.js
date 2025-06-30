@@ -19,11 +19,14 @@ app.use("/api", SetDataRouter);
 // --- Cấu hình phục vụ File Tĩnh ---
 
 // Phục vụ các tài nguyên như CSS, JS, ảnh từ thư mục 'static'
-app.use('/templates/static', express.static(path.join(__dirname, '..', 'templates', 'static')));
+app.use(
+  "/templates/static",
+  express.static(path.join(__dirname, "..", "templates", "static"))
+);
 
 // Khi người dùng truy cập /login, chúng ta sẽ trả về file login.html
-app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'templates', 'web', 'login.html'));
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "templates", "web", "login.html"));
 });
 //Để có infor có thể tìm được ảnh hiển thị lên (frond end)
 app.use(
@@ -32,14 +35,12 @@ app.use(
 );
 
 // Route ảo /pages để phục vụ các file HTML con
-const webPagesPath = path.join(__dirname, '..', 'templates', 'web');
-app.use('/pages', express.static(webPagesPath, { extensions: ['html'] }));
-
-
+const webPagesPath = path.join(__dirname, "..", "templates", "web");
+app.use("/pages", express.static(webPagesPath, { extensions: ["html"] }));
 
 // Bất kỳ yêu cầu nào không phải là API hoặc file tĩnh sẽ được trả về file index.html chính
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'templates', 'web', 'index.html'));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "templates", "web", "index.html"));
 });
 
 // --- Cấu hình HTTPS và Khởi tạo Server (Giữ nguyên phần còn lại) ---

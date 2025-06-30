@@ -1,5 +1,5 @@
 // Hàm lấy địa chỉ local IP 
-const { get } = require('http');
+// const { get } = require('http');
 const os = require('os');
 
 const BE_PORT =5000; // Cổng của BE_Server
@@ -22,6 +22,14 @@ function getLocalIP(){
         return ips;
 }
 
+
+
+// Lấy IP đang hoạt động (lấy cái đầu tiên trong danh sách)
+function getActiveIP() {
+    const allIPs = getLocalIP();
+    return allIPs.length > 0 ? allIPs[0] : null; // Trả về IP đầu tiên hoặc null nếu không tìm thấy
+}
+
 const localIP = getLocalIP(); // Lấy địa chỉ IP cục bộ
 
 const allowedOrigins = [
@@ -38,5 +46,6 @@ module.exports = {
     BE_PORT, // Cổng của BE_Server
     FE_PORT, // Cổng của FE_Server
     jwtSecret, // Mã bí mật dùng để mã hóa JWT
-    getLocalIP // Hàm lấy địa chỉ IP cục bộ 
+    getLocalIP, // Hàm lấy địa chỉ IP cục bộ 
+    getActiveIP
 };
