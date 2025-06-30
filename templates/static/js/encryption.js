@@ -7,8 +7,7 @@ const cryptoService = {
                 name: "ECDH",
                 namedCurve: "P-256"
             },
-            true,
-            ['deriveKey']
+            true,['deriveKey']
         );
     },
 
@@ -54,11 +53,10 @@ const cryptoService = {
             true, // Cho phép xuất khóa
             ["encrypt", "decrypt"] // Quyền sử dụng khóa
         );
-    }
-}
+    },
 
-// ====================Mã hóa và Giải mã===================
-    async function encryptData(sharedKey, data) {
+// ====================Mã hóa và Giải mã TEXT===================
+    async encryptMessage(sharedKey, data) {
         const iv = window.crypto.getRandomValues(new Uint8Array(12)); // Tạo một vector khởi tạo
         const encodedData = new TextEncoder().encode(data); // Mã hóa dữ liệu thành Uint8Array
         const encryptedData = await window.crypto.subtle.encrypt(
@@ -76,10 +74,10 @@ const cryptoService = {
 
         // Chuyển sang đổi chuỗi Base64 để gửi sang JSON
         return btoa(String.fromCharCode.apply(null, ivAndencryptedData));
-    }
+    },
 
     // Giải mã tin nhắn đã nhận 
-    async function decryptData(sharedKey, base64_encryptedData) {
+    async decryptMessage(sharedKey, base64_encryptedData) {
         try {
             // Chuyển đổi Base64 về Uint8Array
             const encryptedData = Uint8Array.from(atob(base64_encryptedData).split('').map(c => c.charCodeAt(0)));
@@ -98,5 +96,45 @@ const cryptoService = {
             console.error("Lỗi giải mã encryption.js", error);
             return "Không thể giải mã dữ liệu"
         }
+    },
 
+// ====================Mã hóa và Giải mã FILE===================
+
+    // Mã hóa ArrayBuffer (dành cho file)
+    async encryptArrayBuffer(sharedKey, data){
+        const iv = window.crypto.getRandomValues(new Uint8Array(12)); // Tạo một vector khởi tạo
+        const encryptedData = await window.crypto.subtle.encrypt(
+            {
+                name: "AES-GCM", iv: iv
+            },
+            sharedKey,
+            data
+        );
+        
+        const ivAndEncryptedData = new Uint8Array(iv.byteLength + encryptedData.byteLength);
+        ivAndEncryptedData.set(iv);
+        ivAndEncryptedData.set(new Uint8Array(encryptedData), iv.byteLength);
+
+        return ivAndEncryptedData.buffer;
+    },
+
+    async decryFileBuffer(sharedKey, data){
+        try{
+            const ivAndEncryptedData = new Uint8Array(data);
+            const iv = ivAndEncryptedData.slice(0, 12); // Lấy vector khởi tạo từ đầu dữ liệu
+            const encryptedData = data.slice(12); // Lấy phần dữ liệu đã mã hóa
+
+            const decryptedBuffer = await window.crypto.subtle.decrypt(
+                {
+                    name: "AES-GCM", iv: iv
+                },
+                sharedKey,
+                encryptedData
+            );
+            return decryptedBuffer;
+        } catch (error) {
+            console.error('Lỗi khi giải mã dữ liệu:', error);
+            return null;
+        }
     }
+};

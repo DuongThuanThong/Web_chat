@@ -4,7 +4,7 @@ const verifyToken = require('../middleware/verifyToken'); // Middleware để x�
 const { setPublicKey, getPublicKey, getUserById } = require('../../mysql/dbUser');
 const { getForumMembers } = require('../../mysql/db.Forums');
 //  Cập nhật public key cho user
-router.post('/setpublickey', verifyToken, async (req, res) => {
+router.post('/crypto/public-key', verifyToken, async (req, res) => {
     const userId = req.user.userId; // Lấy userId từ token đã được giải mã
     const { publicKey } = req.body;
     if (!publicKey) {
@@ -45,7 +45,7 @@ router.get('/forums/:forumId/members/details', verifyToken, async (req, res) => 
             const userDetails = await getUserById(member.id);
             return {
                 id: userDetails.id,
-                name: userDetails.Name,
+                Name: userDetails.Name,
                 avatar: userDetails.avatar,
                 publicKey: userDetails.public_key // Lấy public key từ thông tin người dùng
             };
@@ -56,6 +56,8 @@ router.get('/forums/:forumId/members/details', verifyToken, async (req, res) => 
         res.status(500).json({ success: false, message: 'Lỗi server khi lấy thông tin thành viên của forum.' });
     }   
 });
+
+
 
 module.exports = router;
 

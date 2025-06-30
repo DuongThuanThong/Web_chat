@@ -11,7 +11,6 @@
   const groupList = document.getElementById("groupList");
   const chatHeaderTitle = document.querySelector(".chat-title h2");
   const fileStagingArea = document.getElementById("file-staging-area");
-
   // MỚI: Lấy thêm các nút và input mới
   const imageBtn = document.getElementById("imageBtn");
   const fileBtn = document.getElementById("fileBtn");
@@ -29,7 +28,7 @@
   const MAX_FILE_COUNT = 10;
   // =============================== STATE MỚI CHO MÃ HÓA ==========================
   let userKeyPair = null; // Cặp khóa của người dùng
-  let sharedKeys = {}; // Lưu trữ khóa chia sẻ với từng người dùng {forumId: sharedKey}
+  let forumSharedKeys = {}; // Lưu trữ khóa chia sẻ với từng người dùng {forumId: sharedKey}
   // ======================== XÁC THỰC NGƯỜI DÙNG ========================
   if (!user || !localStorage.getItem("accessToken")) {
     if (overlay) {
@@ -42,15 +41,16 @@
     return;
   }
   // ===========================KHỞI TẠO MÃ HÓA==========================
-  async function initializeEncryption() {
-    const privateKeyJWk = localStorage.getItem(`privateKey_${user.id}`);
-    if (privateKeyJWk) {
-      const privateKey = await cryptoService.importPrivateKeyFromJWK(JSON.parse(privateKeyJWk));
-      const publicKeyJWk = localStorage.getItem(`publicKey_${user.id}`);
-      const publicKey = await cryptoService.importPublicKeyFromJWK(JSON.parse(publicKeyJWk));
+  async function initializeCryption() {
+    const privateKeyJWK = localStorage.getItem(`privateKey_${user.id}`);
+    if (privateKeyJWK) {
+      const privateKey= await cryptoService.importPrivateKeyFromJWK(JSON.parse(privateKeyJWK));
+      const publicKeyJWK = localStorage.getItem(`publicKey_${user.id}`);
+      const publicKey = await cryptoService.importPublicKeyFromJWK(JSON.parse(publicKeyJWK));
       userKeyPair = { privateKey, publicKey };
       console.log("Khóa người dùng đã được khởi tạo từ localStorage");
     } else {
+      // Nếu không có khóa thì tạo mới
       console.log("Chưa có khóa người dùng, tạo mới ....");
       const keys = await cryptoService.generateUserKeys();
       userKeyPair = keys;
@@ -59,7 +59,7 @@
       localStorage.setItem(`privateKey_${user.id}`, JSON.stringify(exportPrivateKey));
       localStorage.setItem(`publicKey_${user.id}`, JSON.stringify(exportPublicKey));
       try {
-        await apiService.fetch("/api/users/updateKeys",{
+        await apiService.fetch("/api/crypto/public-key",{
           method: "POST",
           body: JSON.stringify({publicKey: JSON.stringify(exportPublicKey)}),
         });
@@ -78,7 +78,7 @@
     socket.on("connect", () =>
       console.log("Kết nối thành công với Socket.IO", socket.id)
     );
-    socket.on("newMessage", (message) => {
+    socket.on("newMessage", async (message) => {
       if (message.forum_id === currentForumId) {
         if (message.content_text === 'text' && forumSharedKeys[currentForumId]){
           // Mã hóa nội dung tin nhắn nếu có khóa chia sẻ
@@ -114,17 +114,14 @@
         "<br>"
       )}</div>`;
     } else {
-      const dataAttributes = `data-file-path="${
-        msg.file_path || ""
-      }" data-file-name="${msg.file_name || ""}"`;
+      const fileName = msg.file_name || "Tập tin không tên";
+      const fileId = `file-${msg.id}`;
       const downloadPath = `${API_CONFIG.getApiUrl()}/uploads/${msg.file_path
         .split(/[\\/]/)
         .pop()}`;
-      const fileSize = msg.file_size
-        ? (msg.file_size / 1024 / 1024).toFixed(2) + " MB"
-        : "";
+      const fileSize = msg.file_size ? (msg.file_size / 1024 / 1024).toFixed(2) + " MB" : "";
       messageBubbleContent = `
-            <div class="message-bubble file-message" ${dataAttributes}>
+            <div class="message-bubble file-message" ${fileId}>
                 <div class="file-icon-wrapper">
                     <i class="fas fa-file-alt"></i>
                 </div>
@@ -139,6 +136,20 @@
                 </a>
             </div>`;
     }
+
+    (async () =>{
+      const sharedKey = forumSharedKeys[currentForumId];
+      if (!sharedKey) return;
+      try{
+        const fileUrl = `${API_CONFIG.getApiUrl()}/uploads/${msg.file_path.split(/[\\/]/).pop()}`;
+      }catch (error) {
+        console.error("Lỗi xữ lý file mã hóa",error);
+        const fileElement = document.getElementById(fileId);
+        if (fileElement) fileElement.innerHTML = `<div class="file-icon-wrapper" 
+        style="color: red;"><i class="fas fa-exclamation-triangle"></i>
+        </div><div class="file-info"><div class="file-name">
+        Lỗi: ${fileName}</div></div>`;
+    })();
 
     const avatarUrl = msg.avatar ? `/uploads/${msg.avatar}` : "/templates/static/images/logoT3V.png";
     messageDiv.innerHTML = `
@@ -259,7 +270,16 @@
     sendBtn.disabled = true;
 
     try {
-      if (stagedFiles.length > 0) {
+      if (stagedFiles.length > 0) { 
+        showNotification("Đang mã hóa tệp tin và tải lên ...");
+        const file = stagedFiles[0];
+
+        // Chuyển đổi tệp file sang dạng nhị phân 
+        const arrayBuffer = await file.arrayBuffer();
+
+        // Mã hóa tệp tin 
+        const encryptedBuffer = await cryptoService.encrypFile
+
           const formData = new FormData();
           stagedFiles.forEach((file) => {
           formData.append("file", file);
@@ -272,7 +292,6 @@
           formData.append("messageText", messageText);
         }
 
-        showNotification("Đang tải lên tệp...");
         const response = await apiService.fetch("/api/upload", {
           method: "POST",
           body: formData,
@@ -284,10 +303,11 @@
 
         showNotification("Tải tệp lên thành công!");
       } else if (messageText !== "") {
+        const encryptedText = await cryptoService.encryptMessage(sharedKey, messageText);
         socket.emit("sendMessage", {
           forumId: currentForumId,
           userId: user.id,
-          messageText: messageText,
+          messageText: encryptedText, // Gửi đi message đã mã hóa
         });
       }
     } catch (error) {
@@ -320,11 +340,12 @@
     //! Ở đây, Thông sử dụng người tạo nhóm sẽ tạo ra một khóa chung và phân phối nó
     //! Và ta sẽ đơn giản hóa bằng cách dùng public key của người tạo nhóm kết hợp với private key của user hiện tại
     try {
-      const otherMember = member.find(m=>m.id !== user.id);
-      if (ohterMember){
+      const otherMember = members.find(m=>m.id !== user.id);
+      if (otherMember){
         const ohtrPublicKey = await cryptoService.importPublicKeyFromJWK(JSON.parse(otherMember.publicKey));
         const sharedKey = await cryptoService.deriveSharedKey(userKeyPair.privateKey, ohtrPublicKey);
-      }else if (member.length === 1) { //Trường hợp nhóm chỉ có 1 thành viên
+        forumSharedKeys[currentForumId] = sharedKey;
+      }else if (members.length === 1) { //Trường hợp nhóm chỉ có 1 thành viên
         forumSharedKeys[currentForumId] = 'don_coi'; 
       }
       else {
