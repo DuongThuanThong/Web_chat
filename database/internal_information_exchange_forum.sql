@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th6 29, 2025 lúc 09:15 AM
--- Phiên bản máy phục vụ: 10.4.32-MariaDB
--- Phiên bản PHP: 8.2.12
+-- Host: 127.0.0.1
+-- Generation Time: Jul 01, 2025 at 02:51 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Cơ sở dữ liệu: `internal_information_exchange_forum`
+-- Database: `internal_information_exchange_forum`
 --
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `if_courses`
+-- Table structure for table `if_courses`
 --
 
 CREATE TABLE `if_courses` (
@@ -35,7 +35,7 @@ CREATE TABLE `if_courses` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `if_courses`
+-- Dumping data for table `if_courses`
 --
 
 INSERT INTO `if_courses` (`CourseID`, `CourseName`, `Credits`, `TuitionFee`) VALUES
@@ -52,7 +52,7 @@ INSERT INTO `if_courses` (`CourseID`, `CourseName`, `Credits`, `TuitionFee`) VAL
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `if_forums`
+-- Table structure for table `if_forums`
 --
 
 CREATE TABLE `if_forums` (
@@ -66,7 +66,7 @@ CREATE TABLE `if_forums` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `if_forums`
+-- Dumping data for table `if_forums`
 --
 
 INSERT INTO `if_forums` (`id`, `CourseID`, `CourseName`, `topic`, `created_by_user_id`, `created_at`, `updated_at`) VALUES
@@ -83,7 +83,7 @@ INSERT INTO `if_forums` (`id`, `CourseID`, `CourseName`, `topic`, `created_by_us
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `if_forum_members`
+-- Table structure for table `if_forum_members`
 --
 
 CREATE TABLE `if_forum_members` (
@@ -94,7 +94,7 @@ CREATE TABLE `if_forum_members` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `if_forum_members`
+-- Dumping data for table `if_forum_members`
 --
 
 INSERT INTO `if_forum_members` (`id`, `forum_id`, `user_id`, `joined_at`) VALUES
@@ -109,12 +109,15 @@ INSERT INTO `if_forum_members` (`id`, `forum_id`, `user_id`, `joined_at`) VALUES
 (14, 11, 9999, '2025-06-19 03:46:27'),
 (42, 11, 317750419, '2025-06-25 06:26:45'),
 (43, 4, 317750419, '2025-06-27 10:02:45'),
-(44, 11, 277803483, '2025-06-28 08:42:55');
+(44, 11, 277803483, '2025-06-28 08:42:55'),
+(45, 11, 292609185, '2025-06-30 00:58:49'),
+(46, 11, 173156945, '2025-06-30 01:04:51'),
+(47, 11, 755246311, '2025-06-30 14:13:14');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `if_messages`
+-- Table structure for table `if_messages`
 --
 
 CREATE TABLE `if_messages` (
@@ -131,19 +134,45 @@ CREATE TABLE `if_messages` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `if_messages`
+-- Dumping data for table `if_messages`
 --
 
 INSERT INTO `if_messages` (`id`, `forum_id`, `user_id`, `content_type`, `content_text`, `file_name`, `file_path`, `file_size`, `file_mime_type`, `created_at`) VALUES
 (21, 11, 9999, 'text', '777', NULL, NULL, NULL, NULL, '2025-06-24 10:33:33'),
 (23, 11, 9999, 'text', 'gggg', NULL, NULL, NULL, NULL, '2025-06-24 10:33:49'),
 (24, 11, 317750419, 'text', 'chaof', NULL, NULL, NULL, NULL, '2025-06-26 07:19:54'),
-(25, 11, 277803483, 'text', 'chào', NULL, NULL, NULL, NULL, '2025-06-28 08:57:22');
+(25, 11, 277803483, 'text', 'chào', NULL, NULL, NULL, NULL, '2025-06-28 08:57:22'),
+(26, 11, 173156945, 'text', 'dfsdgfg', NULL, NULL, NULL, NULL, '2025-06-30 01:05:06'),
+(27, 11, 173156945, 'text', 'thong1', NULL, NULL, NULL, NULL, '2025-06-30 01:23:25'),
+(28, 11, 173156945, 'text', 'thong quá trời', NULL, NULL, NULL, NULL, '2025-06-30 01:23:31'),
+(29, 11, 173156945, 'text', 'dsgdg', NULL, NULL, NULL, NULL, '2025-06-30 01:26:20'),
+(30, 11, 292609185, 'text', 'dsf', NULL, NULL, NULL, NULL, '2025-06-30 01:33:40'),
+(31, 11, 173156945, 'text', 'fhfh', NULL, NULL, NULL, NULL, '2025-06-30 01:36:56'),
+(32, 11, 173156945, 'text', 'fgdg', NULL, NULL, NULL, NULL, '2025-06-30 01:37:14'),
+(33, 11, 292609185, 'text', 'chào', NULL, NULL, NULL, NULL, '2025-06-30 01:38:00'),
+(34, 11, 173156945, 'text', 'hello', NULL, NULL, NULL, NULL, '2025-06-30 01:39:34'),
+(35, 11, 292609185, 'text', 'hi', NULL, NULL, NULL, NULL, '2025-06-30 01:39:42'),
+(36, 11, 173156945, 'text', 'fg', NULL, NULL, NULL, NULL, '2025-06-30 01:40:12'),
+(41, 11, 173156945, 'text', 'uk', NULL, NULL, NULL, NULL, '2025-06-30 01:50:59'),
+(42, 11, 292609185, 'text', 'dfsdf', NULL, NULL, NULL, NULL, '2025-06-30 01:54:53'),
+(43, 11, 173156945, 'text', 'dsg', NULL, NULL, NULL, NULL, '2025-06-30 01:55:05'),
+(44, 11, 292609185, 'text', 'fd', NULL, NULL, NULL, NULL, '2025-06-30 01:55:08'),
+(45, 11, 292609185, 'text', 'df', NULL, NULL, NULL, NULL, '2025-06-30 01:55:15'),
+(46, 11, 173156945, 'text', 'fs', NULL, NULL, NULL, NULL, '2025-06-30 01:55:17'),
+(47, 11, 292609185, 'text', 'alo ha', NULL, NULL, NULL, NULL, '2025-06-30 02:00:57'),
+(48, 11, 292609185, 'text', 'hehehe code chạy ổn rồi nhỉ', NULL, NULL, NULL, NULL, '2025-06-30 02:01:06'),
+(49, 11, 173156945, 'text', 'ổn rồi', NULL, NULL, NULL, NULL, '2025-06-30 02:04:08'),
+(50, 11, 292609185, 'text', 'gf', NULL, NULL, NULL, NULL, '2025-06-30 02:04:33'),
+(51, 11, 173156945, 'text', 'hehe được rồi kìa bro', NULL, NULL, NULL, NULL, '2025-06-30 02:04:44'),
+(52, 11, 173156945, 'file', 'skbyv5lf.png', '1751249101574-95082380-skbyv5lf.png', 'E:\\A.Project_WebChat\\INTERNAL_INFORMATION_EXCHANGE_FORUM\\uploads\\1751249101574-95082380-skbyv5lf.png', 3391508, 'image/png', '2025-06-30 02:05:01'),
+(53, 11, 292609185, 'text', 'gửi được rồi à nhưng thiếu mã hóa nha', NULL, NULL, NULL, NULL, '2025-06-30 02:14:07'),
+(54, 11, 173156945, 'text', 'uk đúng rồi phải thiếu mã hóa thôi vì chưa sửa mà', NULL, NULL, NULL, NULL, '2025-06-30 02:14:26'),
+(55, 11, 173156945, 'file', '101953601_p0_master1200.jpg', '1751288754768-245136895-101953601_p0_master1200.jpg', 'E:\\A.Project_WebChat\\INTERNAL_INFORMATION_EXCHANGE_FORUM\\uploads\\1751288754768-245136895-101953601_p0_master1200.jpg', 634511, 'image/jpeg', '2025-06-30 13:05:54');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `if_refresh_tokens`
+-- Table structure for table `if_refresh_tokens`
 --
 
 CREATE TABLE `if_refresh_tokens` (
@@ -155,7 +184,7 @@ CREATE TABLE `if_refresh_tokens` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `if_refresh_tokens`
+-- Dumping data for table `if_refresh_tokens`
 --
 
 INSERT INTO `if_refresh_tokens` (`id`, `user_id`, `token`, `expires_at`, `created_at`) VALUES
@@ -206,12 +235,28 @@ INSERT INTO `if_refresh_tokens` (`id`, `user_id`, `token`, `expires_at`, `create
 (139, 317750419, 'c2d9bc887487d576d6bcc55ad3d2d7dd465821423112d16639c780294c088c153b3d118dbfbf65d23f8e6a8291b1c322f5067ced47c3b15a02e49e41cd08aba2', '2025-07-05 20:05:52', '2025-06-28 13:05:52'),
 (140, 277803483, 'c42334a21e5951ba7ba8fe77c8b6ae1a0563e6fced7f832fae96108f00a6593734009d5b00fcf5586da2f16d8b19fbf870c1d214bcecbe05815993ef5eff5285', '2025-07-05 20:06:15', '2025-06-28 13:06:15'),
 (141, 317750419, 'c2e44b14ab8f6b7541beea507f43523047f74c996cf548339bb1923702b60210667b2a4098d0f9bce08292b26ba7681827c4bf092ab2a272b30767c05dd6208c', '2025-07-05 20:28:15', '2025-06-28 13:28:15'),
-(142, 317750419, '2ab381fcc50801da628b560b91d272968114a1630774650a0fbc698c56104113965e529bafdca499f6211a0b768f0c9fa969bfdfc7fe859454a9a8b2c8d6da36', '2025-07-05 22:45:14', '2025-06-28 15:45:14');
+(142, 317750419, '2ab381fcc50801da628b560b91d272968114a1630774650a0fbc698c56104113965e529bafdca499f6211a0b768f0c9fa969bfdfc7fe859454a9a8b2c8d6da36', '2025-07-05 22:45:14', '2025-06-28 15:45:14'),
+(143, 292609185, '2c6338a50bf7cd729583ec6ba70044f9878335f964c37822b2ac166e8e556f81203a49767bb6f667e53b803bb18e5ea2732186ba7a0d47b00b38ac49797e0aa5', '2025-07-07 07:59:47', '2025-06-30 00:59:47'),
+(144, 173156945, '1883f45491de9d430893f7b3f1d3eb3bae8f08dce3204066d995a53a1558343b987c3168e04a34d6daa1bfe7d173622b65f458d3a4b2f8bc7888bebaa90d7321', '2025-07-07 08:04:57', '2025-06-30 01:04:57'),
+(145, 173156945, '44c662b0acb550bdaf3ff7ba23ebd9668a59cb7ec185d0ef8cf63f1069e94ed4e0b7b7f42bfe0ba1c7953ba1ff4cbb9474421213d844415555f891f5c39675ca', '2025-07-07 08:23:17', '2025-06-30 01:23:17'),
+(146, 292609185, 'dc6dac58cfe372016792571188999a4a8162ace15984bd7d796bc0d333862b16092866c0a9f3ce23f3799769415b1225f6ea1493b588467d442f1707cdc2c804', '2025-07-07 08:32:51', '2025-06-30 01:32:51'),
+(147, 173156945, '730b6de09621755d951c7edc195784fb75ede933083a6f81f24a6b1f891ec1bd39946925352575e1612bd82d04af624fb0657734fb7b485337ab10fae2729b55', '2025-07-07 08:40:04', '2025-06-30 01:40:04'),
+(148, 292609185, '6a80cbb2f79d31511c74e4e2669f10373645dfde883ca1c522c37b51a6cf014fbb26f961625ced09582ba1cecc944f761a3c62ec0b64f3375b24be57a8e148e5', '2025-07-07 08:48:21', '2025-06-30 01:48:21'),
+(149, 292609185, 'b0d947b25d0598e9f6bafbe018f2c810b8950ab4f08f47eedc00b91bc7ba2a9080ca620c6292678cb8fc54f235abbce32b091af10a027c4721545a71b5278617', '2025-07-07 08:58:14', '2025-06-30 01:58:14'),
+(150, 173156945, 'f4fe6452dc0982cdea1452a76e089f9275ea7563bff2e313c19d191cbdbcd12d23be5f588339287f3fce05b74d49aae3a1d503c5921c2f42fd2ccb07bf6fa875', '2025-07-07 09:03:58', '2025-06-30 02:03:58'),
+(151, 292609185, 'eabd025aefaabb7d1645caa97bbb33658710cc39397198fe42c2728cb1fed16f1bf053fee09617119e8eb245b77df6362fc0a8ae305c53e445ba089da8af2e8f', '2025-07-07 09:12:50', '2025-06-30 02:12:50'),
+(152, 292609185, 'e8f7f35ff5904975263b4b4baef33129a94538ffb3051fa25f22a2ecfdb2d7973cdcf46e677e79e86a74d921ed7b9321f48686551cad22736f85560047b4d78e', '2025-07-07 09:13:02', '2025-06-30 02:13:02'),
+(153, 292609185, 'a52bd32a33f2f81d64098011376fe7c048f93bbcdd948d2c088de0e9d093783c7bd12c66353a8badbac34534842fe6f651e2925d2d123a83d25ededd0c1e5f66', '2025-07-07 09:13:14', '2025-06-30 02:13:14'),
+(154, 292609185, '13595c5592f7e9e4738372b742d8fe6558f99aa456823eddc2b6d2c09cf5ff4e65dd49476f274083ceaf65d0a61749e1fcce2146710a0f8cc93d8d3ac8e04387', '2025-07-07 09:13:46', '2025-06-30 02:13:46'),
+(155, 292609185, 'eabd1538ccf9b8ae49ad4f97bc082d81a7a3f9aff0003fdd7c21d504bff0b4ed8736d09e63d4c7782949eac60cc38db2bfab72d5e7a29ed10a643714ed319494', '2025-07-07 09:27:45', '2025-06-30 02:27:45'),
+(156, 173156945, '6de1dd6f78935cfc2172ee8e969c63c713b760a959aa9d0c35635df831f04cda103d2355b063b9c78a39684fa536acfc76cda54137f194c8804c081847dd738a', '2025-07-07 20:01:38', '2025-06-30 13:01:38'),
+(157, 173156945, 'c0d2204d9e5a49a9bbbf7e337bc704c67587c39c93c5d6a6659f54a7d51d31e31f9bdff5b8c354cf42b9e1dce70c83dbcb6353f2877e8bf5aa9063de05241d61', '2025-07-07 20:05:36', '2025-06-30 13:05:36'),
+(158, 292609185, '6b99db3f19e51b5c606f4318c196834e7bdbb507885e6ecaf2ad9ef370543d687d63ce87f8718d5b5cd39a36fedbad31bd5c4573da206280e37d0cbbe6e1df6c', '2025-07-07 20:06:43', '2025-06-30 13:06:43');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `if_users`
+-- Table structure for table `if_users`
 --
 
 CREATE TABLE `if_users` (
@@ -221,30 +266,36 @@ CREATE TABLE `if_users` (
   `username` varchar(50) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password_hash` varchar(255) NOT NULL,
-  `avatar` varchar(255) DEFAULT NULL
+  `avatar` varchar(255) DEFAULT NULL,
+  `public_key` text DEFAULT NULL,
+  `private_key` text DEFAULT NULL,
+  `salt` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `if_users`
+-- Dumping data for table `if_users`
 --
 
-INSERT INTO `if_users` (`id`, `Name`, `gender`, `username`, `email`, `password_hash`, `avatar`) VALUES
-(9999, 'T3V', '0', 'admin', 'thienobita0203@gmail.com', '$2b$10$u7RlU.oheJM3pD35sXUoJOMnO/todjT1M0lnzNXyqH2UgFQO7YTM6', NULL),
-(277803483, 'ồ ze', '0', 'NttDz1', 'nttsoradz1@gmail.com', '$2b$10$AGplOVy4ZErEld/r3WD1LuV6hDoycEzxZ9iDKJEeYA90VLneM0fDi', '1751115991514.jpg'),
-(317750419, 'Thiên đẹp trai', '0', 'thien', 'thethien2k5@gmail.com', '$2b$10$7LTfpO2djCWhclSkHoWw8eNAlrALk2hXbfJ6XuKjqWrztuw7VVi9i', '1751018831781.jpg');
+INSERT INTO `if_users` (`id`, `Name`, `gender`, `username`, `email`, `password_hash`, `avatar`, `public_key`, `private_key`, `salt`) VALUES
+(9999, 'T3V', '0', 'admin', 'thienobita0203@gmail.com', '$2b$10$u7RlU.oheJM3pD35sXUoJOMnO/todjT1M0lnzNXyqH2UgFQO7YTM6', NULL, NULL, NULL, NULL),
+(173156945, 'thong1', '0', 'thong1', 'gainah40@gmail.com', '$2b$10$4eOekzI6albaWIbY2hT5oOz4Iy/YdWvvJ0l0EAXzvUgyiMA35clFm', '1751247428462.jpg', NULL, NULL, NULL),
+(277803483, 'ồ ze', '0', 'NttDz1', 'nttsoradz1@gmail.com', '$2b$10$AGplOVy4ZErEld/r3WD1LuV6hDoycEzxZ9iDKJEeYA90VLneM0fDi', '1751115991514.jpg', NULL, NULL, NULL),
+(292609185, 'thongka', '0', 'thongkaka', 'thuanthong675@gmail.com', '$2b$10$LUvad41AM1TCsYDaGniZcewnyW3IRZVWfywMFPCfOUZuoBpQ9mBsO', '1751249066457.jpg', NULL, NULL, NULL),
+(317750419, 'Thiên đẹp trai', '0', 'thien', 'thethien2k5@gmail.com', '$2b$10$7LTfpO2djCWhclSkHoWw8eNAlrALk2hXbfJ6XuKjqWrztuw7VVi9i', '1751018831781.jpg', NULL, NULL, NULL),
+(755246311, 'thong2', '', 'thong2', 'thongthuanduong675@gmail.com', '$2b$10$Mc28zRWjQjKIrvHHgk9xV.QwkV3ScmlTPjmw8NzD/jzT2b49fy5Ye', NULL, NULL, NULL, NULL);
 
 --
--- Chỉ mục cho các bảng đã đổ
+-- Indexes for dumped tables
 --
 
 --
--- Chỉ mục cho bảng `if_courses`
+-- Indexes for table `if_courses`
 --
 ALTER TABLE `if_courses`
   ADD PRIMARY KEY (`CourseID`);
 
 --
--- Chỉ mục cho bảng `if_forums`
+-- Indexes for table `if_forums`
 --
 ALTER TABLE `if_forums`
   ADD PRIMARY KEY (`id`),
@@ -252,7 +303,7 @@ ALTER TABLE `if_forums`
   ADD KEY `FK_if_forums_CourseID` (`CourseID`);
 
 --
--- Chỉ mục cho bảng `if_forum_members`
+-- Indexes for table `if_forum_members`
 --
 ALTER TABLE `if_forum_members`
   ADD PRIMARY KEY (`id`),
@@ -260,7 +311,7 @@ ALTER TABLE `if_forum_members`
   ADD KEY `fk_forum_members_users` (`user_id`);
 
 --
--- Chỉ mục cho bảng `if_messages`
+-- Indexes for table `if_messages`
 --
 ALTER TABLE `if_messages`
   ADD PRIMARY KEY (`id`),
@@ -268,7 +319,7 @@ ALTER TABLE `if_messages`
   ADD KEY `fk_messages_users` (`user_id`);
 
 --
--- Chỉ mục cho bảng `if_refresh_tokens`
+-- Indexes for table `if_refresh_tokens`
 --
 ALTER TABLE `if_refresh_tokens`
   ADD PRIMARY KEY (`id`),
@@ -276,7 +327,7 @@ ALTER TABLE `if_refresh_tokens`
   ADD KEY `user_id` (`user_id`);
 
 --
--- Chỉ mục cho bảng `if_users`
+-- Indexes for table `if_users`
 --
 ALTER TABLE `if_users`
   ADD PRIMARY KEY (`id`),
@@ -284,60 +335,60 @@ ALTER TABLE `if_users`
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- AUTO_INCREMENT cho các bảng đã đổ
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT cho bảng `if_forums`
+-- AUTO_INCREMENT for table `if_forums`
 --
 ALTER TABLE `if_forums`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
--- AUTO_INCREMENT cho bảng `if_forum_members`
+-- AUTO_INCREMENT for table `if_forum_members`
 --
 ALTER TABLE `if_forum_members`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
--- AUTO_INCREMENT cho bảng `if_messages`
+-- AUTO_INCREMENT for table `if_messages`
 --
 ALTER TABLE `if_messages`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
--- AUTO_INCREMENT cho bảng `if_refresh_tokens`
+-- AUTO_INCREMENT for table `if_refresh_tokens`
 --
 ALTER TABLE `if_refresh_tokens`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=143;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=159;
 
 --
--- Các ràng buộc cho các bảng đã đổ
+-- Constraints for dumped tables
 --
 
 --
--- Các ràng buộc cho bảng `if_forums`
+-- Constraints for table `if_forums`
 --
 ALTER TABLE `if_forums`
   ADD CONSTRAINT `FK_if_forums_CourseID` FOREIGN KEY (`CourseID`) REFERENCES `if_courses` (`CourseID`),
   ADD CONSTRAINT `fk_forums_users` FOREIGN KEY (`created_by_user_id`) REFERENCES `if_users` (`id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `if_forum_members`
+-- Constraints for table `if_forum_members`
 --
 ALTER TABLE `if_forum_members`
   ADD CONSTRAINT `fk_forum_members_forums` FOREIGN KEY (`forum_id`) REFERENCES `if_forums` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_forum_members_users` FOREIGN KEY (`user_id`) REFERENCES `if_users` (`id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `if_messages`
+-- Constraints for table `if_messages`
 --
 ALTER TABLE `if_messages`
   ADD CONSTRAINT `fk_messages_forums` FOREIGN KEY (`forum_id`) REFERENCES `if_forums` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_messages_users` FOREIGN KEY (`user_id`) REFERENCES `if_users` (`id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `if_refresh_tokens`
+-- Constraints for table `if_refresh_tokens`
 --
 ALTER TABLE `if_refresh_tokens`
   ADD CONSTRAINT `fk_refresh_tokens_users` FOREIGN KEY (`user_id`) REFERENCES `if_users` (`id`) ON DELETE CASCADE;
