@@ -27,9 +27,12 @@ async function ProcessingInformationWhenAddingUsers(username, email, password) {
     const result = await AddNewUsersByCallingDatabase(
       userId,
       username,
-      username,
+      username, // ở đây là Name
       email,
-      hashedPassword
+      hashedPassword,
+      publicKey,
+      privateKey,
+      salt
     );
     if (result) {
       //Thêm người dùng vào nhóm chung

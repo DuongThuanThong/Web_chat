@@ -34,7 +34,7 @@ router.get("/user/me", verifyToken, async (req, res) => {
       user: {
         id: user.id,
         username: user.username,
-        name: user.name,
+        name: user.Name,
         email: user.email,
         avatar: user.avatar
           ? `${user.avatar}`
@@ -107,6 +107,9 @@ router.post("/login", async (req, res) => {
           avatar: user.avatar
             ? `${user.avatar}`
             : "logoT3V.png",
+          public: user.public_key,
+          private: user.private_key,
+          salt: user.salt
         },
       });
     } else {

@@ -39,10 +39,10 @@ async function CheckUserId(userId) {
 }
 //====Các hàm có nhiệm vụ chỉnh sửa thông tin user======
 //Thêm user mới
-async function AddUser(id, Name, username, email, password_hash) {
+async function AddUser(id, Name, username, email, password_hash, public_key, private_key, salt) {
   const [result] = await pool.execute(
-    "INSERT INTO if_users (id, Name, username, email, password_hash) VALUES (?, ?, ?, ?, ?)",
-    [id, Name, username, email, password_hash]
+    "INSERT INTO if_users (id, Name, username, email, password_hash, public_key, private_key, salt) VALUES (?, ?, ?, ?, ?,?,?,?)",
+    [id, Name, username, email, password_hash, public_key, private_key, salt]
   );
   return result.affectedRows > 0; // Trả về true nếu thêm thành công
 }
@@ -92,10 +92,11 @@ async function GetAvatar(username) {
   );
   return rows.length > 0 ? rows[0].avatar : null;
 }
-// Lấy thông tin người dùng theo tên đăng nhập
+// Lấy thông tin người dùng theo tên đăng nhập 
+// thật ra tham số truyền vào chính là IDuser :))) mà đặt tên vậy cho hack não
 async function getUserByUsername(username) {
   const [rows] = await pool.execute(
-    "SELECT id, Name, gender, email, avatar FROM if_users WHERE username = ? LIMIT 1",
+    "SELECT id, Name, gender, email, avatar, public_key, private_key, salt FROM if_users WHERE username = ? LIMIT 1",
     [username]
   );
   return rows.length > 0 ? rows[0] : null;
@@ -123,7 +124,7 @@ async function setPublicKey (userId, publicKey){
 // Hàm lấy public key của user
 async function getPublicKey(userId) {
   const [rows] = await pool.query(
-        'SELECT id, Name, gender, username, email, avatar FROM if_users WHERE id = ?',
+        'SELECT public_key FROM if_users WHERE id = ?',
         [userId]
   );
 return rows.length > 0 ? rows[0].public_key : null;
