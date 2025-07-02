@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const userKeys = await cryptoService.generateUserKey();
         const publicKeyJwk = await cryptoService.exportKeyToJwk(userKeys.publicKey);
-        const privateKeyJwk = await cryptoService.xportKeyToJwk(userKeys.privateKey);
+        const privateKeyJwk = await cryptoService.eportKeyToJwk(userKeys.privateKey);
         
         const salt = cryptoService.getRandomValues(new Uint8Array(16));
         const kek = await cryptoService.deriveKeyFromPassword(password, salt);

@@ -382,15 +382,15 @@ router.post("/add-user", async (req, res) => {
       .status(400)
       .json({ success: false, message: "Thiếu thông tin!" });
   }
-  const ok = await ProcessingInformationWhenAddingUsers(
-    username,
-    email,
-    password,
-    publicKey,
-    privateKey,
-    salt
-  );
   try {
+    const ok = await ProcessingInformationWhenAddingUsers(
+      username,
+      email,
+      password,
+      publicKey,
+      privateKey,
+      salt
+    );
     // Gọi hàm xử lý thông tin người dùng
     if (ok) {
       res.json({ success: true, message: "Đăng ký thành công!" });

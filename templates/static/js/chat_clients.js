@@ -20,9 +20,11 @@
   const userString = localStorage.getItem("user");
   const user = userString ? JSON.parse(userString) : null;
   let currentForumId = null;
-  let socket;
+  let socket
 
-  let stagedFiles = [];
+  let groupSymmetricKey = new Map(); // Lưu trữ <forumId, CryptoKey>
+
+  let stagedFiles = []; // Mảng chứa các tệp đã chọn để gửi
   const MAX_TOTAL_SIZE = 100 * 1024 * 1024; // 100MB
   const MAX_FILE_COUNT = 10;
 
@@ -37,53 +39,28 @@
     }, 2000);
     return;
   }
-    // ===========================KHỞI TẠO MÃ HÓA==========================
-  async function initializeCryption() {
-    const privateKeyJWK = localStorage.getItem(`privateKey_${user.id}`);
-    if (privateKeyJWK) {
-      const privateKey= await cryptoService.importPrivateKeyFromJWK(JSON.parse(privateKeyJWK));
-      const publicKeyJWK = localStorage.getItem(`publicKey_${user.id}`);
-      const publicKey = await cryptoService.importPublicKeyFromJWK(JSON.parse(publicKeyJWK));
-      userKeyPair = { privateKey, publicKey };
-      console.log("Khóa người dùng đã được khởi tạo từ localStorage");
-    } else {
-      // Nếu không có khóa thì tạo mới
-      console.log("Chưa có khóa người dùng, tạo mới ....");
-      const keys = await cryptoService.generateUserKeys();
-      userKeyPair = keys;
-      const exportPrivateKey = await cryptoService.exportKeyToJWK(userKeyPair.privateKey);
-      const exportPublicKey = await cryptoService.exportKeyToJWK(userKeyPair.publicKey);
-      localStorage.setItem(`privateKey_${user.id}`, JSON.stringify(exportPrivateKey));
-      localStorage.setItem(`publicKey_${user.id}`, JSON.stringify(exportPublicKey));
-      try {
-        await apiService.fetch("/api/crypto/public-key",{
-          method: "POST",
-          body: JSON.stringify({publicKey: JSON.stringify(exportPublicKey)}),
-        });
-      } catch (error) {
-        console.error("Lỗi khi cập nhật khóa công khai:", error);
-        alert('Không thể đồng bộ khóa mã hóa với server. Vui lòng tải lại trang.');
-      }
-    }
-  }
 
   // ======================== KHỞI TẠO SOCKET.IO ========================
   function initializeSocket() {
     socket = io(API_CONFIG.getApiUrl(), {
       auth: { token: localStorage.getItem("accessToken") },
     });
+
     socket.on("connect", () =>
       console.log("Kết nối thành công với Socket.IO", socket.id)
     );
+
     socket.on("newMessage", (message) => {
       if (message.forum_id === currentForumId) {
         renderSingleMessage(message, false);
         scrollToBottom();
       }
     });
+    // Không cần quan tâm 
     socket.on("sendMessageError", (error) => {
       alert(`Lỗi gửi tin nhắn: ${error.message}`);
     });
+
   }
   
   // ======================== TIN NHẮN VÀ FILE ===================================
@@ -258,6 +235,11 @@
         apiService.fetch(`/api/forums/${currentForumId}/messages`),
         apiService.fetch(`/api/forums/${currentForumId}/members`),
       ]);
+      //! Khóa nhóm tìm ở đây nè
+      if ((!groupSymmetricKey.has(currentForumId) )){
+        const key = await cryptoService.generateSymmetricKey();
+        groupSymmetricKey.set(currentForumId, key);
+      }
       if (messagesRes.success) renderMessages(messagesRes.data);
       if (membersRes.success) renderMembers(membersRes.data);
     } catch (error) {

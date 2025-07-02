@@ -32,11 +32,14 @@ async function AddNewUsersByCallingDatabase(
   Name,
   username,
   email,
-  password_hash
+  password_hash,
+  publicKey,
+  privateKey,
+  salt
 ) {
   // Thêm người dùng mới vào cơ sở dữ liệu
   try {
-    const result = await AddUser(id, Name, username, email, password_hash);
+    const result = await AddUser(id, Name, username, email, password_hash,publicKey, privateKey, salt);
     return result; // Trả về true nếu thêm thành công, false nếu không
   } catch (error) {
     console.error("Lỗi khi thêm user:", error);

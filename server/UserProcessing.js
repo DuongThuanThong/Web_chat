@@ -6,7 +6,7 @@ const {
 const bcrypt = require("bcrypt");
 
 // Xử lý thông tin người mới đăng ký
-async function ProcessingInformationWhenAddingUsers(username, email, password) {
+async function ProcessingInformationWhenAddingUsers(username, email, password,publicKey,privateKey,salt) {
   //Tao ID chỉ có số tự nhiên N độ dài 12
   let attempts = 0;
   var userId = "";
