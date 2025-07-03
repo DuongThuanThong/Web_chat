@@ -1,4 +1,4 @@
-const { CheckUserIDFromDatabase } = require("./router/CheckAndGetData");
+const { CheckUserNameFromDatabase,CheckUserIDFromDatabase } = require("./router/CheckAndGetData");
 const {
   AddNewUsersByCallingDatabase,
   AddUsersToTheGroupInTheDatabase,

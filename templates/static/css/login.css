@@ -274,7 +274,7 @@ form {
   top: 120px;
 }
 
-#source-link>i {
+#source-link > i {
   color: rgb(94, 106, 210);
 }
 
@@ -282,7 +282,7 @@ form {
   top: 65px;
 }
 
-#yt-link>i {
+#yt-link > i {
   color: rgb(219, 31, 106);
 }
 
@@ -290,7 +290,7 @@ form {
   top: 10px;
 }
 
-#Fund-link>i {
+#Fund-link > i {
   color: rgb(255, 251, 0);
 }
 
@@ -317,13 +317,13 @@ form {
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.meta-link>i,
-.meta-link>span {
+.meta-link > i,
+.meta-link > span {
   height: 20px;
   line-height: 20px;
 }
 
-.meta-link>span {
+.meta-link > span {
   color: white;
   font-family: "Rubik", sans-serif;
   transition: color 600ms;
@@ -347,8 +347,8 @@ form {
 .loader {
   width: 70px;
   aspect-ratio: 1;
-  background:
-    radial-gradient(farthest-side, #ffa516 90%, #0000) center/16px 16px,
+  background: radial-gradient(farthest-side, #ffa516 90%, #0000) center/16px
+      16px,
     radial-gradient(farthest-side, green 90%, #0000) bottom/12px 12px;
   background-repeat: no-repeat;
   animation: l17 1s infinite linear;
@@ -372,5 +372,3 @@ form {
     transform: rotate(1turn);
   }
 }
-
-

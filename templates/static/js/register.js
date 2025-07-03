@@ -1,27 +1,23 @@
-document.addEventListener("DOMContentLoaded", () => {
+const registerForm = document.getElementById("registerForm");
+const otpBox = document.getElementById("otpBox");
+const loader = document.getElementById("loadingOverlay");
+const submitRegisterBtn = document.getElementById("registerBtn");
+let generatedOTP = "";
+let userEmail = "";
 
-  
-  const registerForm = document.getElementById("registerForm");
-  const otpBox = document.getElementById("otpBox");
-  const loader = document.getElementById("loadingOverlay");
-  const registerBtn = document.getElementById("registerBtn");
-  let generatedOTP = "";
-  let userEmail = "";
+function showLoader() {
+  if (loader) loader.style.display = "flex";
+}
 
-  function showLoader() {
-    if (loader) loader.style.display = "flex";
-  }
+function hideLoader() {
+  if (loader) loader.style.display = "none";
+}
 
-  function hideLoader() {
-    if (loader) loader.style.display = "none";
-  }
-
-  if (!registerForm) {
-      console.error("Không tìm thấy form với id='registerForm'!");
-      return; // Dừng lại nếu không tìm thấy form
-  }
-
-  registerBtn.addEventListener("click", async () => {
+if (!registerForm) {
+  console.error("Không tìm thấy form với id='registerForm'!");
+}
+if (registerForm && submitRegisterBtn) {
+  submitRegisterBtn.addEventListener("click", async () => {
     // Không còn e và e.preventDefault()
     showLoader();
 
@@ -54,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "Content-Type": "application/json",
             Accept: "application/json",
           },
-          body: JSON.stringify({ email, username }),
+          body: JSON.stringify({ email, username, password }),
         });
 
         const data = await response.json();
@@ -76,7 +72,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 100);
       } catch (error) {
         hideLoader();
-        alert("Không thể gửi OTP. Vui lòng thử lại sau!\nLỗi: " + error.message);
+        alert(
+          "Không thể gửi OTP. Vui lòng thử lại sau!\nLỗi: " + error.message
+        );
       }
     }
     // Nếu đang nhập OTP
@@ -143,4 +141,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   });
-});
+
+  registerForm.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      submitRegisterBtn.click();
+    }
+  });
+}

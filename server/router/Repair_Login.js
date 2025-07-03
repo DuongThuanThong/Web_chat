@@ -1,22 +1,17 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
+
 const verifyToken = require("../middleware/verifyToken");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-
+const {handleLogin}= require("./CheckAndGetData")
 const {
-  GetPassword_hash,
-  getUserByUsername,
   getUserById,
   SetInforUser,
 } = require("../../mysql/dbUser");
 
-const { storeRefreshToken } = require("../../mysql/db.Token");
-const { jwtSecret } = require("../config");
+;
 
 // ==== Lấy thông tin user hiện tại
 router.get("/user/me", verifyToken, async (req, res) => {
@@ -54,11 +49,8 @@ router.get("/user/me", verifyToken, async (req, res) => {
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Thiếu thông tin!" });
+    return res.status(400).json({ success: false, message: "Thiếu thông tin!" });
   }
-
   try {
     const user = await getUserByUsername(username);
     if (!user) {
@@ -119,9 +111,7 @@ router.post("/login", async (req, res) => {
     }
   } catch (err) {
     console.error("(Repair_Login.js)Lỗi đăng nhập:", err);
-    res
-      .status(500)
-      .json({ success: false, message: "(Repair_Login.js)Lỗi server!" });
+    res.status(500).json({ success: false, message: "(Repair_Login.js)Lỗi server!" });
   }
 });
 ////

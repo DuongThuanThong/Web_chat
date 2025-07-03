@@ -26,7 +26,7 @@
       defaultAvatarPreview.style.display = "none";
     } else {
       //Nếu không có avatar
-      avatarPreview.src = "/uploads/logoT3V.png";
+      avatarPreview.src = "/uploads/AvatarlogoT3V.png";
       avatarPreview.style.display = "none";
       defaultAvatarPreview.style.display = "block";
     }
