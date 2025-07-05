@@ -129,6 +129,35 @@ async function getPublicKey(userId) {
   );
 return rows.length > 0 ? rows[0].public_key : null;
 }
+
+//================= Lấy Pre-Key Bundle=========================
+// Có nghĩa là lấy thông tin công khai của user khác 
+async function getSignalKeyBundle(userId) {
+  const [rows] = await pool.execute(
+    'SELECT id, identity_key_public, registration_id, signed_pre_key_public, signed_pre_key_signature, pre_keys FROM if_users WHERE id = ? LIMIT 1',
+    [userId]
+  );
+
+  if (rows.length === 0) return null ;
+
+  const user = rows[0];
+  // Nếu user.pre_keys nếu tồn tại thì chuyển sang chuỗi văn bản thành mảng hoặc mảng rỗng 
+  const preKeys = user.pre_keys ? JSON.parse(user.pre_keys) : [];
+  const onePreKey = preKeys.length > 0 ? preKeys[0] : null;
+
+  if (!onePreKey) return null; // Không có pre-key nào khả dụng
+
+  return {
+    userId: user.id,
+    identityKey: user.indentity_key_public,
+    registrationId: user.registration_id,
+    signPreKey:{
+      publicKey: user.signed_pre_key_public,
+      signature: user.signed_pre_key_signature,
+    },
+    preKey: onePreKey // Chỉ trả về một pre-key để dùng
+  };
+}
 //xuất (export) các biến/hàm ra ngoài file
 module.exports = {
   pool,
@@ -142,5 +171,6 @@ module.exports = {
   CheckUserId,
   SetInforUser,
   setPublicKey,
-  getPublicKey
+  getPublicKey,
+  getSignalKeyBundle
 };

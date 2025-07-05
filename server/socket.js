@@ -47,35 +47,43 @@ function initializeSocket(io) {
         });
 
         // Khi client gửi tin nhắn đến nhóm forum
-        socket.on('sendMessage', async (data) => {
+        socket.on('sendGroupMessage', async (encryptedData) => {
 
             try{
-                const userId = socket.user.userId; // Lấy userId từ thông tin người dùng đã giải mã trong socket
-                //Gán giá trị phong cách ChatGPT chỉ~
-                const { forumId, messageText } = data;
-                if (!forumId || !userId || !messageText) {
-                    console.error('Dữ liệu tin nhắn không hợp lệ:', data);
-                    return;
-                }
+                const senderId = socket.user.userId;
+                const{ forumId,mainCiphertext, distributionMessages } = encryptedData;
+                
+                //Kiểm tra đủ dữ liệu không
+                if (!forumId || !mainCiphertext || !distributionMessages) return
+
                 // Tạo Object chứa thông tin tin nhắn để lưu vào CSDL
                 const messageData = {
                     forumId,
                     userId,
-                    contentType: 'text',
-                    contentText: messageText
+                    contentType: 'signal/group',
+                    contentText: mainCiphertext
                 };
-            
-                // Gọi hàm lưu tin nhắn vào CSDL
-            const savedResult = await saveMessage(messageData);
+                const savedResult = await saveMessage(messageData);
+
                 // Nếu lưu thành công, gửi tin nhắn đến tất cho các client khác trong nhóm
-            if (savedResult && savedResult.success) {
-                    // Tạo dữ Object để gửi đi cho client
-                    const messageForClient = savedResult.data;
-                    const roomName = `forum_${forumId}`
-                    // .to (Gửi sự kiện đến ....)
-                    // .emit (Phát sự kiện tới client hiện tại gửi)
-                    io.to(roomName).emit('newMessage', messageForClient);
-                    console.log(`Broadcast message to room ${roomName}`);
+                if (savedResult && savedResult.success) {
+                    const roomName= `forum_${forumId}`;
+                    const roomSockets = await io.in(roomName).fetchSockets();//Lấy tất cả user đang kết nối trực tiếp
+
+                    for (const socketInRoom of roomSockets){
+                        const recipientId = socketInRoom.user.userId;
+                        // Tìm gói tin nhắn phân phối cho người nhận này
+                        const distMgsForRecipient = distributionMessages[recipientId];
+
+                        if (distMgsForRecipient){
+                            socketInRoom.emit('newGroupMessage', {
+                                forumId, senderId, mainCiphertext,
+                                distributionMessages: distMgsForRecipient // Gói tin này chỉ dành riêng cho user này
+                            });
+                        }
+
+                    }
+                    console.log(`Đã phân phối tin nhắn nhóm từ ${senderId} trong phòng ${roomName}`);
                 }
             }catch(error){
                 console.error('Lỗi khi xử lý tin nhắn:', error);

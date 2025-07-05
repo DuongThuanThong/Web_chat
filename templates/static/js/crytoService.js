@@ -1,5 +1,7 @@
 
 const cryptoService = {
+
+
 // ==================QUẢN LÝ KHÓA====================
     // Tạo khóa định danh cho mỗi user
     async generateUserKey(){
@@ -75,7 +77,7 @@ const cryptoService = {
     },  
 
     // Mã hóa private key (đã được export ra JWK) bằng KEK.
-       async encryptPrivateKey(kek, privateKeyJwk) {
+    async encryptPrivateKey(kek, privateKeyJwk) {
         const iv = window.crypto.getRandomValues(new Uint8Array(12));
         const privateKeyString = JSON.stringify(privateKeyJwk);
         const encodedPrivateKey = new TextEncoder().encode(privateKeyString);

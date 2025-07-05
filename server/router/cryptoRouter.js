@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const verifyToken = require('../middleware/verifyToken'); // Middleware để xác thực token
-const { setPublicKey, getPublicKey, getUserById } = require('../../mysql/dbUser');
+const { setPublicKey, getPublicKey, getUserById, getSignalKeyBundle } = require('../../mysql/dbUser');
 const { getForumMembers } = require('../../mysql/db.Forums');
 //  Cập nhật public key cho user
 router.post('/crypto/public-key', verifyToken, async (req, res) => {
@@ -56,9 +56,40 @@ router.get('/forums/:forumId/members/details', verifyToken, async (req, res) => 
         res.status(500).json({ success: false, message: 'Lỗi server khi lấy thông tin thành viên của forum.' });
     }   
 });
+router.post('/crypto/keys', verifyToken, async(req, res)=>{
+    const userId = req.user.userId;
+    const{identityKey, registrationId, preKeys, signedPreKey} = req.body;
+    
+    if (!identityKey || !registrationId || !preKeys || !signedPreKey) {
+        return res.status(400).json({ success: false, message: 'Thiếu thông tin khóa.' });
+    }
+
+    try{
+        //! Viết thêm hàm để lưu các khóa này trong CSDL
+    }catch(error){
+
+    }
+
+});
 
 
+// Lấy pre-key bundle của user khác để bắt đầu phiên chat
+router.post('/crypto/keys/:userId', verifyToken, async(req, res)=>{
+    const targetUserId = req.params.userId;
+    try {
+        const bundle = await getSignalKeyBundle(targetUserId);
+        
+        if (!bundle){
+             return res.status(404).json({ success: false, message: 'Không tìm thấy pre-key bundle cho người dùng này.' });
+        }
 
+        res.status(200).json({ success: true, data: bundle });
+    }
+    catch(error){
+        console.error('Lỗi khi lấy pre-key bundle:', error);
+        res.status(500).json({ success: false, message: 'Lỗi server khi lấy bundle.' });
+   }
+});
 module.exports = router;
 
 

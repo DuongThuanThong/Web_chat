@@ -183,9 +183,11 @@
         const formData = new FormData();
         stagedFiles.forEach((file) => {
           formData.append("file", file);
+
         });
         formData.append("forumId", currentForumId);
         formData.append("userId", user.id);
+
         if (messageText !== "") {
           formData.append("messageText", messageText);
         }

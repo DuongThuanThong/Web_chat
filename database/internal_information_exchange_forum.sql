@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Jul 01, 2025 at 02:51 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Máy chủ: 127.0.0.1
+-- Thời gian đã tạo: Th7 04, 2025 lúc 11:36 AM
+-- Phiên bản máy phục vụ: 10.4.32-MariaDB
+-- Phiên bản PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `internal_information_exchange_forum`
+-- Cơ sở dữ liệu: `internal_information_exchange_forum`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `if_courses`
+-- Cấu trúc bảng cho bảng `if_courses`
 --
 
 CREATE TABLE `if_courses` (
@@ -35,7 +35,7 @@ CREATE TABLE `if_courses` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data for table `if_courses`
+-- Đang đổ dữ liệu cho bảng `if_courses`
 --
 
 INSERT INTO `if_courses` (`CourseID`, `CourseName`, `Credits`, `TuitionFee`) VALUES
@@ -52,7 +52,7 @@ INSERT INTO `if_courses` (`CourseID`, `CourseName`, `Credits`, `TuitionFee`) VAL
 -- --------------------------------------------------------
 
 --
--- Table structure for table `if_forums`
+-- Cấu trúc bảng cho bảng `if_forums`
 --
 
 CREATE TABLE `if_forums` (
@@ -66,7 +66,7 @@ CREATE TABLE `if_forums` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `if_forums`
+-- Đang đổ dữ liệu cho bảng `if_forums`
 --
 
 INSERT INTO `if_forums` (`id`, `CourseID`, `CourseName`, `topic`, `created_by_user_id`, `created_at`, `updated_at`) VALUES
@@ -83,7 +83,7 @@ INSERT INTO `if_forums` (`id`, `CourseID`, `CourseName`, `topic`, `created_by_us
 -- --------------------------------------------------------
 
 --
--- Table structure for table `if_forum_members`
+-- Cấu trúc bảng cho bảng `if_forum_members`
 --
 
 CREATE TABLE `if_forum_members` (
@@ -94,7 +94,7 @@ CREATE TABLE `if_forum_members` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `if_forum_members`
+-- Đang đổ dữ liệu cho bảng `if_forum_members`
 --
 
 INSERT INTO `if_forum_members` (`id`, `forum_id`, `user_id`, `joined_at`) VALUES
@@ -117,7 +117,7 @@ INSERT INTO `if_forum_members` (`id`, `forum_id`, `user_id`, `joined_at`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `if_messages`
+-- Cấu trúc bảng cho bảng `if_messages`
 --
 
 CREATE TABLE `if_messages` (
@@ -134,7 +134,7 @@ CREATE TABLE `if_messages` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `if_messages`
+-- Đang đổ dữ liệu cho bảng `if_messages`
 --
 
 INSERT INTO `if_messages` (`id`, `forum_id`, `user_id`, `content_type`, `content_text`, `file_name`, `file_path`, `file_size`, `file_mime_type`, `created_at`) VALUES
@@ -172,7 +172,7 @@ INSERT INTO `if_messages` (`id`, `forum_id`, `user_id`, `content_type`, `content
 -- --------------------------------------------------------
 
 --
--- Table structure for table `if_refresh_tokens`
+-- Cấu trúc bảng cho bảng `if_refresh_tokens`
 --
 
 CREATE TABLE `if_refresh_tokens` (
@@ -184,7 +184,7 @@ CREATE TABLE `if_refresh_tokens` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `if_refresh_tokens`
+-- Đang đổ dữ liệu cho bảng `if_refresh_tokens`
 --
 
 INSERT INTO `if_refresh_tokens` (`id`, `user_id`, `token`, `expires_at`, `created_at`) VALUES
@@ -256,7 +256,7 @@ INSERT INTO `if_refresh_tokens` (`id`, `user_id`, `token`, `expires_at`, `create
 -- --------------------------------------------------------
 
 --
--- Table structure for table `if_users`
+-- Cấu trúc bảng cho bảng `if_users`
 --
 
 CREATE TABLE `if_users` (
@@ -269,33 +269,38 @@ CREATE TABLE `if_users` (
   `avatar` varchar(255) DEFAULT NULL,
   `public_key` text DEFAULT NULL,
   `private_key` text DEFAULT NULL,
-  `salt` varchar(255) DEFAULT NULL
+  `salt` varchar(255) DEFAULT NULL,
+  `identity_key_public` text DEFAULT NULL,
+  `registration_id` int(11) DEFAULT NULL,
+  `pre_keys` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`pre_keys`)),
+  `signed_pre_key_public` text DEFAULT NULL,
+  `signed_pre_key_signature` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `if_users`
+-- Đang đổ dữ liệu cho bảng `if_users`
 --
 
-INSERT INTO `if_users` (`id`, `Name`, `gender`, `username`, `email`, `password_hash`, `avatar`, `public_key`, `private_key`, `salt`) VALUES
-(9999, 'T3V', '0', 'admin', 'thienobita0203@gmail.com', '$2b$10$u7RlU.oheJM3pD35sXUoJOMnO/todjT1M0lnzNXyqH2UgFQO7YTM6', NULL, NULL, NULL, NULL),
-(173156945, 'thong1', '0', 'thong1', 'gainah40@gmail.com', '$2b$10$4eOekzI6albaWIbY2hT5oOz4Iy/YdWvvJ0l0EAXzvUgyiMA35clFm', '1751247428462.jpg', NULL, NULL, NULL),
-(277803483, 'ồ ze', '0', 'NttDz1', 'nttsoradz1@gmail.com', '$2b$10$AGplOVy4ZErEld/r3WD1LuV6hDoycEzxZ9iDKJEeYA90VLneM0fDi', '1751115991514.jpg', NULL, NULL, NULL),
-(292609185, 'thongka', '0', 'thongkaka', 'thuanthong675@gmail.com', '$2b$10$LUvad41AM1TCsYDaGniZcewnyW3IRZVWfywMFPCfOUZuoBpQ9mBsO', '1751249066457.jpg', NULL, NULL, NULL),
-(317750419, 'Thiên đẹp trai', '0', 'thien', 'thethien2k5@gmail.com', '$2b$10$7LTfpO2djCWhclSkHoWw8eNAlrALk2hXbfJ6XuKjqWrztuw7VVi9i', '1751018831781.jpg', NULL, NULL, NULL),
-(755246311, 'thong2', '', 'thong2', 'thongthuanduong675@gmail.com', '$2b$10$Mc28zRWjQjKIrvHHgk9xV.QwkV3ScmlTPjmw8NzD/jzT2b49fy5Ye', NULL, NULL, NULL, NULL);
+INSERT INTO `if_users` (`id`, `Name`, `gender`, `username`, `email`, `password_hash`, `avatar`, `public_key`, `private_key`, `salt`, `identity_key_public`, `registration_id`, `pre_keys`, `signed_pre_key_public`, `signed_pre_key_signature`) VALUES
+(9999, 'T3V', '0', 'admin', 'thienobita0203@gmail.com', '$2b$10$u7RlU.oheJM3pD35sXUoJOMnO/todjT1M0lnzNXyqH2UgFQO7YTM6', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(173156945, 'thong1', '0', 'thong1', 'gainah40@gmail.com', '$2b$10$4eOekzI6albaWIbY2hT5oOz4Iy/YdWvvJ0l0EAXzvUgyiMA35clFm', '1751247428462.jpg', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(277803483, 'ồ ze', '0', 'NttDz1', 'nttsoradz1@gmail.com', '$2b$10$AGplOVy4ZErEld/r3WD1LuV6hDoycEzxZ9iDKJEeYA90VLneM0fDi', '1751115991514.jpg', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(292609185, 'thongka', '0', 'thongkaka', 'thuanthong675@gmail.com', '$2b$10$LUvad41AM1TCsYDaGniZcewnyW3IRZVWfywMFPCfOUZuoBpQ9mBsO', '1751249066457.jpg', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(317750419, 'Thiên đẹp trai', '0', 'thien', 'thethien2k5@gmail.com', '$2b$10$7LTfpO2djCWhclSkHoWw8eNAlrALk2hXbfJ6XuKjqWrztuw7VVi9i', '1751018831781.jpg', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(755246311, 'thong2', '', 'thong2', 'thongthuanduong675@gmail.com', '$2b$10$Mc28zRWjQjKIrvHHgk9xV.QwkV3ScmlTPjmw8NzD/jzT2b49fy5Ye', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 --
--- Indexes for dumped tables
+-- Chỉ mục cho các bảng đã đổ
 --
 
 --
--- Indexes for table `if_courses`
+-- Chỉ mục cho bảng `if_courses`
 --
 ALTER TABLE `if_courses`
   ADD PRIMARY KEY (`CourseID`);
 
 --
--- Indexes for table `if_forums`
+-- Chỉ mục cho bảng `if_forums`
 --
 ALTER TABLE `if_forums`
   ADD PRIMARY KEY (`id`),
@@ -303,7 +308,7 @@ ALTER TABLE `if_forums`
   ADD KEY `FK_if_forums_CourseID` (`CourseID`);
 
 --
--- Indexes for table `if_forum_members`
+-- Chỉ mục cho bảng `if_forum_members`
 --
 ALTER TABLE `if_forum_members`
   ADD PRIMARY KEY (`id`),
@@ -311,7 +316,7 @@ ALTER TABLE `if_forum_members`
   ADD KEY `fk_forum_members_users` (`user_id`);
 
 --
--- Indexes for table `if_messages`
+-- Chỉ mục cho bảng `if_messages`
 --
 ALTER TABLE `if_messages`
   ADD PRIMARY KEY (`id`),
@@ -319,7 +324,7 @@ ALTER TABLE `if_messages`
   ADD KEY `fk_messages_users` (`user_id`);
 
 --
--- Indexes for table `if_refresh_tokens`
+-- Chỉ mục cho bảng `if_refresh_tokens`
 --
 ALTER TABLE `if_refresh_tokens`
   ADD PRIMARY KEY (`id`),
@@ -327,7 +332,7 @@ ALTER TABLE `if_refresh_tokens`
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `if_users`
+-- Chỉ mục cho bảng `if_users`
 --
 ALTER TABLE `if_users`
   ADD PRIMARY KEY (`id`),
@@ -335,60 +340,60 @@ ALTER TABLE `if_users`
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT cho các bảng đã đổ
 --
 
 --
--- AUTO_INCREMENT for table `if_forums`
+-- AUTO_INCREMENT cho bảng `if_forums`
 --
 ALTER TABLE `if_forums`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
--- AUTO_INCREMENT for table `if_forum_members`
+-- AUTO_INCREMENT cho bảng `if_forum_members`
 --
 ALTER TABLE `if_forum_members`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
--- AUTO_INCREMENT for table `if_messages`
+-- AUTO_INCREMENT cho bảng `if_messages`
 --
 ALTER TABLE `if_messages`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
--- AUTO_INCREMENT for table `if_refresh_tokens`
+-- AUTO_INCREMENT cho bảng `if_refresh_tokens`
 --
 ALTER TABLE `if_refresh_tokens`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=159;
 
 --
--- Constraints for dumped tables
+-- Các ràng buộc cho các bảng đã đổ
 --
 
 --
--- Constraints for table `if_forums`
+-- Các ràng buộc cho bảng `if_forums`
 --
 ALTER TABLE `if_forums`
   ADD CONSTRAINT `FK_if_forums_CourseID` FOREIGN KEY (`CourseID`) REFERENCES `if_courses` (`CourseID`),
   ADD CONSTRAINT `fk_forums_users` FOREIGN KEY (`created_by_user_id`) REFERENCES `if_users` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `if_forum_members`
+-- Các ràng buộc cho bảng `if_forum_members`
 --
 ALTER TABLE `if_forum_members`
   ADD CONSTRAINT `fk_forum_members_forums` FOREIGN KEY (`forum_id`) REFERENCES `if_forums` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_forum_members_users` FOREIGN KEY (`user_id`) REFERENCES `if_users` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `if_messages`
+-- Các ràng buộc cho bảng `if_messages`
 --
 ALTER TABLE `if_messages`
   ADD CONSTRAINT `fk_messages_forums` FOREIGN KEY (`forum_id`) REFERENCES `if_forums` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_messages_users` FOREIGN KEY (`user_id`) REFERENCES `if_users` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `if_refresh_tokens`
+-- Các ràng buộc cho bảng `if_refresh_tokens`
 --
 ALTER TABLE `if_refresh_tokens`
   ADD CONSTRAINT `fk_refresh_tokens_users` FOREIGN KEY (`user_id`) REFERENCES `if_users` (`id`) ON DELETE CASCADE;
