@@ -1,6 +1,4 @@
-// templates/static/js/signal/SignalStorage.js
-
-class SignalStorage {
+class signalStorage {
     constructor() {
         this.dbName = 'SignalStorageDB';
         this.versiondb = null;

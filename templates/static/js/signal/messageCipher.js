@@ -1,51 +1,48 @@
 
 const messageCipher = {
     //Mã hóa tin nhắn cho cả nhóm
-    async encrypt(recipientId, plainText) {
+    async encryptForGroup(formId,memberId, plainText) {
+        const groupSender = {name: formId, deviceId: user.id};
+        const groupCipher = new libsignal.GroupCipher(signalStorage,groupSender);
+        const distributionMessage = await groupCipher.createrSession();
 
-        // const myStorage = getMySignalStorage();
-        // const address = new libsignal.SignalProtocolAddress(recipientId, 1);
-        // const sessionCipher = new libsignal.SessionCipher(myStorage, address);
-
-        // const plaintextBuffer = new TextEncoder().encode(plainText);
-        
-        // // Thư viện sẽ tự động quản lý các ratchet key để mã hóa
-        // const ciphertext = await sessionCipher.encrypt(plaintextBuffer);
-
-        // console.log("Mã hóa thành công!");
-        // return ciphertext; // Đây là đối tượng chứa type và body
-
-        const mainCiphertext = btoa(`GROUP_ENCRYPTED[${plainText}]`)// Mã hóa thành chuỗi Base64
-        const distributionMessages = {};
-        for (const memberId of memberIds) {
-            distributionMessages[memberId] = btoa(`KEY_FOR_${memberId}`);
+        const  distributionMessages = {};
+        for (const memberId of memberIds){
+            if (memberId === user.id) continue;
+            const address = new libsignal.ProtocolAddress(memberId, 1);
+            await sessionManager.ensureSession(memberId);
+            const sessionCipher = new libsignal.SessionCipher(signalStorage, address);
+            const encryptedDistributionMsg = await sessionCipher.encrypt(distributionMessage);
+            distributionMessages[memberId] = {
+                type: encryptedDistributionMsg.type,
+                body: btoa(String.fromCharCode(...new Uint8Array(encryptedDistributionMsg.body)))
+            };
         }
-        return { mainCiphertext, distributionMessages};
+        const mainCiphertext = await groupCipher.encrypt(new TextEncoder().encode(plainText));
+        
+        return {
+            mainCiphertext: btoa(String.fromCharCode(...new Uint8Array(mainCiphertext))),
+            distributionMessages
+        };
     },
 
 
-    //Giải mã một tin nhắn nhận được.
-    async decrypt(senderId, ciphertext) {
-        console.log(`Đang giải mã tin nhắn từ ${senderId}...`);
+    async decryptGroupMessage(forumId, senderId, payload) {
+        const groupSender = { name: forumId, deviceId: senderId };
+        const groupCipher = new libsignal.GroupCipher(signalStorage, groupSender);
         
-        // const myStorage = getMySignalStorage();
-        // const address = new libsignal.SignalProtocolAddress(senderId, 1);
-        // const sessionCipher = new libsignal.SessionCipher(myStorage, address);
-
-        // let decryptedBuffer;
-        // if (ciphertext.type === 3) { // PreKeyWhisperMessage (tin nhắn đầu tiên)
-        //     decryptedBuffer = await sessionCipher.decryptPreKeyWhisperMessage(ciphertext.body, 'binary');
-        // } else { // WhisperMessage (tin nhắn thông thường)
-        //     decryptedBuffer = await sessionCipher.decryptWhisperMessage(ciphertext.body, 'binary');
-        // }
+        if (payload.distributionMessage) {
+            const senderAddress = new libsignal.ProtocolAddress(senderId, 1);
+            const sessionCipher = new libsignal.SessionCipher(signalStorage, senderAddress);
+            const distMsgBodyBuffer = Uint8Array.from(atob(payload.distributionMessage.body), c => c.charCodeAt(0));
+            
+            const senderKeyDistributionMessage = await sessionCipher.decryptPreKeyWhisperMessage(distMsgBodyBuffer);
+            await groupCipher.process(senderKeyDistributionMessage);
+        }
         
-        // console.log("Giải mã thành công!");
-        // return new TextDecoder().decode(decryptedBuffer);
-
-        // --- DỮ LIỆU GIẢ LẬP ĐỂ TEST ---
-        console.log(`Đã nhận được key: ${atob(messagePayload.distributionMessage)}`);
-        const plainText = atob(messagePayload.mainCiphertext).match(/GROUP_ENCRYPTED\[(.*?)\]/)[1];
-        return plainText;
-        // --- KẾT THÚC DỮ LIỆU GIẢ LẬP ---
+        const mainCiphertextBuffer = Uint8Array.from(atob(payload.mainCiphertext), c => c.charCodeAt(0));
+        const decryptedBuffer = await groupCipher.decrypt(mainCiphertextBuffer);
+        
+        return new TextDecoder().decode(decryptedBuffer);
     }
 };

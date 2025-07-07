@@ -131,7 +131,6 @@ return rows.length > 0 ? rows[0].public_key : null;
 }
 
 //================= Lấy Pre-Key Bundle=========================
-// Có nghĩa là lấy thông tin công khai của user khác 
 async function getSignalKeyBundle(userId) {
   const [rows] = await pool.execute(
     'SELECT id, identity_key_public, registration_id, signed_pre_key_public, signed_pre_key_signature, pre_keys FROM if_users WHERE id = ? LIMIT 1',
@@ -158,6 +157,25 @@ async function getSignalKeyBundle(userId) {
     preKey: onePreKey // Chỉ trả về một pre-key để dùng
   };
 }
+
+//================== Lưu các Public Keys của user======================
+async function saveSignalKeys(userId, keys){
+  const sql = 
+    `UPDATE id_user SET identity_key_public = ?, registration_id = ?, pre_keys = ?, signed_pre_key_public = ?, signed_pre_key_signature = ?
+    WHERE id=?`;
+
+  const {identityKey, registrationId, preKey, signedPreKey}= keys;
+
+  const [result] = await pool.execute(sql,[
+    identityKey,
+    registrationId,
+    JSON.stringify(preKey),
+    signedPreKey.publicKey,
+    signedPreKey.signature,
+    userId
+  ]);
+  return result.affectedRows > 0;
+}
 //xuất (export) các biến/hàm ra ngoài file
 module.exports = {
   pool,
@@ -172,5 +190,6 @@ module.exports = {
   SetInforUser,
   setPublicKey,
   getPublicKey,
-  getSignalKeyBundle
+  getSignalKeyBundle,
+  saveSignalKeys
 };

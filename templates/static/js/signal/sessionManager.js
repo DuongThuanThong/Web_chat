@@ -2,46 +2,46 @@
 const sessionManager = {
     // Kiểm tra và xây dụng phiên thật sự cần thiết
     async ensureSession(recipientId){
+        const addrees = new libsignal.ProtocolAddress(recipientId,1);
+        const sessionExists = await signalStorage.loadSession();
 
-        const existingSession = await this.loadSession(recipientId);
-        // Nếu phiên đã tồn tại rồi thì thôi
-        if (existingSession) return;
+        if (sessionExists) return;
 
-        // Nếu phiên chưa tồn tại thì ta sẽ là sao:
-        //1: Lấy preKey Bundle của người nhận từ server xuống
-        const bundle = await this.fetchPreKeyBundle(recipientId);
-        // kiểm tra thử xem có rỗng không để thực hiện bước 2:
-        if (!bundle){
-            throw new Error(`Không thể lấy bundle cho ${recipientId}`);
-        }
+        //Nếu chưa có tồn tại thì tạo một cáii mới
+        const preKeyBundle = await this.fetchPreKeyBundle(recipientId);
+        if (!preKeyBundle)  throw new Error(`Không thế lấy được bundle cho ${recipientId} `);
+        
+        const sessionBuilder = new libsignal.SessionBuilder(signalStorage, addrees);
 
-        //2: Load khóa định danh của chính mình từ IndexedDB
-        //3: Xây dựng phiên bằng thư viện signal
-        //4: Xử lý pre-key bundle để tạo phiên chat
-
-
+        await sessionBuilder.processPreKey(preKeyBundle);
 
     },
-
     // GỌI API  thông qua file apiService.js
     async fetchPreKeyBundle(userId){
         try{
             const res = await apiService.fetch(`api/crypto/keys/${userId}`);
-            if (res.success){
-                return res.data;
+            if (!res.success) return null;
+
+            const bundle = res.data;
+            const base64ToBuffer =  (base64) => Uint8Array.from(atob(base64), c => c.charCodeAt(0)).buffer;
+            
+            return{ 
+                identityKey: base64ToBuffer(bundle.identityKey),
+                registrationId: bundle.registrationId,
+                preKey: {
+                    keyId: bundle.preKey.keyId,
+                    publicKey: base64ToBuffer(bundle.preKey.publicKey)
+                },
+                signedPreKey: {
+                    keyId : bundle.signedPreKey.keyId,
+                    publicKey: base64ToBuffer(bundle.signedPreKey.publicKey),
+                    signature: base64ToBuffer(bundle.signedPreKey.signature),
+                }
             }
-            return null;
         }catch(error){
-            console.error(`Lỗi khi fetch pre-key bundle của ${userId}:`, error);
+            console.error(`Lỗi khi fetch bundle của ${userId}:`, error);
             return null;
         }
-    },
-
-
-    // Hàm này mục đích là load phiên từ IndexedDB
-    async loadSession (){
-        // Logic để load phiên từ IndexedDB
-        return null;
     }
 }
 

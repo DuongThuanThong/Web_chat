@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const verifyToken = require('../middleware/verifyToken'); // Middleware để xác thực token
-const { setPublicKey, getPublicKey, getUserById, getSignalKeyBundle } = require('../../mysql/dbUser');
+const { setPublicKey, getPublicKey, getUserById, getSignalKeyBundle, saveSignalKeys } = require('../../mysql/dbUser');
 const { getForumMembers } = require('../../mysql/db.Forums');
 //  Cập nhật public key cho user
 router.post('/crypto/public-key', verifyToken, async (req, res) => {
@@ -58,16 +58,23 @@ router.get('/forums/:forumId/members/details', verifyToken, async (req, res) => 
 });
 router.post('/crypto/keys', verifyToken, async(req, res)=>{
     const userId = req.user.userId;
-    const{identityKey, registrationId, preKeys, signedPreKey} = req.body;
+    const keys= req.body;
     
-    if (!identityKey || !registrationId || !preKeys || !signedPreKey) {
+    if (!keys.identityKey || ! keys.registrationId || ! keys.preKeys || ! keys.signedPreKey) {
         return res.status(400).json({ success: false, message: 'Thiếu thông tin khóa.' });
     }
 
     try{
-        //! Viết thêm hàm để lưu các khóa này trong CSDL
+        // Gọi hàm lưu các khóa này vào CSDL
+        const saveKeys = await saveSignalKeys(userId, keys)
+        if  (saveKeys){
+            res.status(200).json({ success: true, message: 'Đã đăng ký khóa thành công.' });
+        } else {
+            res.status(500).json({ success: false, message: 'Không thể cập nhật khóa trong CSDL.' });
+        }
     }catch(error){
-
+         console.error('Lỗi khi lưu khóa Signal:', error);
+        res.status(500).json({ success: false, message: 'Lỗi server khi lưu khóa.' });
     }
 
 });
