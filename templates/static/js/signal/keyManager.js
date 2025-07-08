@@ -8,7 +8,10 @@ const keyManager = {
             // 2. Tạo các bộ khóa cần thiết
             const registrationId = libsignal.KeyHelper.generateRegistrationId();
             const identity = await libsignal.KeyHelper.generateIdentityKeyPair();
-            const preKeys = await libsignal.KeyHelper.generatePreKeys(1, 100); // Tạo 100 pre-key, bắt đầu từ ID 1
+            const preKeys = [];
+            for(let i = 1; i <= 100; i++) {
+                preKeys.push(await libsignal.KeyHelper.generatePreKey(i));
+            }
             const signedPreKey = await libsignal.KeyHelper.generateSignedPreKey(identity, 1); // Tạo signed pre-key với ID là 1
 
             //3.Lưu toàn bộ khóa trên vào IndexedDB
@@ -51,15 +54,15 @@ const keyManager = {
     BufferIntoBase64(keys){
         const bufferToBase64 = (buffer) => btoa(String.fromCharCode(...new Uint8Array(buffer)));
         return{ 
-            identityKey: bufferToBase64(keys.pubKey),
+            identityKey: bufferToBase64(keys.identityKey),
             registrationId: keys.registrationId,
             preKeys: keys.preKeys.map(key => ({
                 keyId: key.keyId,
-                publicKey: bufferToBase64(key.pubKey),
+                publicKey: bufferToBase64(key.publicKey),
             })),
             signedPreKey: {
                 keyId : keys.signedPreKey.keyId,
-                publicKey: bufferToBase64(keys.signedPreKey.keyPair.pubKey),
+                publicKey: bufferToBase64(keys.signedPreKey.publicKey),
                 signature: bufferToBase64(keys.signedPreKey.signature),
             }
         }

@@ -50,12 +50,7 @@
       console.log("Kết nối thành công với Socket.IO", socket.id)
     );
 
-    socket.on("newMessage", (message) => {
-      if (message.forum_id === currentForumId) {
-        renderSingleMessage(message, false);
-        scrollToBottom();
-      }
-    });
+    socket.on("newGroupMessage", handleNewMessage);
     // Không cần quan tâm 
     socket.on("sendMessageError", (error) => {
       alert(`Lỗi gửi tin nhắn: ${error.message}`);
@@ -237,16 +232,28 @@
         apiService.fetch(`/api/forums/${currentForumId}/messages`),
         apiService.fetch(`/api/forums/${currentForumId}/members`),
       ]);
-      //! Khóa nhóm tìm ở đây nè
-      if ((!groupSymmetricKey.has(currentForumId) )){
-        const key = await cryptoService.generateSymmetricKey();
-        groupSymmetricKey.set(currentForumId, key);
+
+      if (membersRes.success) {
+        membersCache.set(currentForumId, membersRes.data);
+        renderMembers(membersRes.data);
       }
-      if (messagesRes.success) renderMessages(messagesRes.data);
-      if (membersRes.success) renderMembers(membersRes.data);
+
+      if (messagesRes.success) {
+        const decryptedMessages = await Promise.all(messagesRes.data.map(async msg => {
+          if (msg.content_type === 'signal/group') {
+            try {
+              const payload = JSON.parse(msg.content_text);
+              msg.content_text = await messageCipher.decryptGroupMessage(msg.forum_id, msg.user_id, payload);
+            } catch (e) {
+              msg.content_text = "Tin nhắn cũ, không thể giải mã.";
+            }
+            }
+          return msg;
+        }));
+            renderMessages(decryptedMessages);
+      }
     } catch (error) {
       console.error(`Lỗi khi tải dữ liệu cho forum ${currentForumId}:`, error);
-      messagesArea.innerHTML = `<p style="color: red; text-align: center;">${error.message}</p>`;
     }
   }
 
@@ -376,6 +383,14 @@
 
   window.addEventListener("click", hideContextMenu);
 
-  initializeSocket();
-  loadUserForums();
+
+  async function initialize() {
+    initializeSocket();
+    await signalStorage.init(); // Khởi tạo kho lưu trữ
+    await keyManager.initializeKeys(); // Tạo khóa nếu cần
+    await loadUserForums();
+  }
+
+
+  initialize();
 })();
