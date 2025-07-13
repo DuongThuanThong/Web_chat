@@ -1,8 +1,8 @@
-const { CheckUserNameFromDatabase,CheckUserIDFromDatabase } = require("./router/CheckAndGetData");
+const { CheckUserNameFromDatabase, CheckUserIDFromDatabase } = require('../routes/CheckAndGetData');
 const {
   AddNewUsersByCallingDatabase,
   AddUsersToTheGroupInTheDatabase,
-} = require("./router/SetData");
+} = require('../routes/SetData');
 const bcrypt = require("bcrypt");
 
 // Xử lý thông tin người mới đăng ký

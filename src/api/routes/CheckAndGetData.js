@@ -1,13 +1,13 @@
 // CheckAndGetData.js
 const express = require("express");
 const router = express.Router();
-const dbCourses = require("../../mysql/db.Courses");
+const dbCourses = require("../models/db.Courses");
 const {
   CheckUserId,
   GetPassword_hash,
   getUserByUsername,
-} = require("../../mysql/dbUser");
-const { IsUserInForum } = require("../../mysql/db.Forums");
+} = require("../models/dbUser");
+const { IsUserInForum } = require("../models/db.Forums");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { jwtSecret } = require("../config");

@@ -1,10 +1,9 @@
-
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const { jwtSecret } = require('../config');
 const { findRefreshToken } = require('../../mysql/db.Token');
-const { getUserById } = require('../../mysql/dbUser');
+const { getUserById } = require('../models/dbUser');
 
 router.post('/refresh-token', async (req, res) => {
     // Lấy refresh token từ cookie mà client tự động gửi lên

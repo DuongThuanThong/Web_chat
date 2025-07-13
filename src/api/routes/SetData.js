@@ -1,6 +1,6 @@
-const { AddUser } = require("../../mysql/dbUser");
-const { joinForum } = require("../../mysql/db.Forums");
-const { getID } = require("../../mysql/db.Courses");
+const { AddUser } = require("../models/dbUser");
+const { joinForum } = require("../models/db.Forums");
+const { getID } = require("../models/db.Courses");
 const { CheckIsUserInForum } = require("./CheckAndGetData");
 
 const express = require("express");

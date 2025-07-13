@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const verifyToken = require('../middleware/verifyToken'); // Middleware để xác thực token
-const { setPublicKey, getPublicKey, getUserById, getSignalKeyBundle, saveSignalKeys } = require('../../mysql/dbUser');
+const { setPublicKey, getPublicKey, getUserById, getSignalKeyBundle, saveSignalKeys } = require('../models/dbUser');
 const { getForumMembers } = require('../../mysql/db.Forums');
 //  Cập nhật public key cho user
 router.post('/crypto/public-key', verifyToken, async (req, res) => {

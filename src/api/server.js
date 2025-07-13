@@ -6,14 +6,14 @@ const path = require("path");
 const fs = require("fs");
 const cookieParser = require("cookie-parser"); // Thư viện để phân tích cookie
 // --------------------Import các module cần thiết--------------------
-const { BE_PORT, getLocalIP, allowedOrigins } = require("./config.js"); // Import cổng của BE_Server từ config.js
-const otpRoutes = require("./router/RegisterAndSendEmail.js");
-const loginRoutes = require("./router/Repair_Login.js");
-const {initializeSocket} = require("./socket.js"); // Import hàm khởi tạo Socket.IO
-const createFileRouter = require("./router/fileRouter.js"); // Import router để xử lý upload file
-const tokenRouter = require('./router/tokenRouter'); // Import router để xử lý token
-const forumRouters = require("./router/forumRouter.js"); // Import router để xử lý forum
-const cryptoRouter = require("./router/cryptoRouter.js"); // Import router để xử lý mã hóa
+const { BE_PORT, getLocalIP, allowedOrigins } = require('./config');
+const otpRoutes = require('./routes/RegisterAndSendEmail');
+const loginRoutes = require('./routes/Repair_Login');
+const { initializeSocket } = require('./socket');
+const createFileRouter = require('./routes/fileRouter');
+const tokenRouter = require('./routes/tokenRouter');
+const forumRouters = require('./routes/forumRouter');
+const cryptoRouter = require('./routes/cryptoRouter');
 
 const {router: SetDataRouter }= require("./router/SetData");
 const { router: checkAndGetDataRouter } = require("./router/CheckAndGetData");

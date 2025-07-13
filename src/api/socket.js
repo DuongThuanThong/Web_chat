@@ -3,8 +3,8 @@
 
 // Import hàm lưu tin nhắn từ module db.Messages 
 const jwt = require('jsonwebtoken');
-const { saveMessage } = require('../mysql/db.Messages');
-const {jwtSecret } = require('./config');
+const { saveMessage } = require('./models/db.Messages');
+const { jwtSecret } = require('./config');
 
 // Hàm khởi tạo Socket.IO
 function initializeSocket(io) {
@@ -51,7 +51,7 @@ function initializeSocket(io) {
 
             try{
                 const senderId = socket.user.userId;
-                const{ forumId,mainCiphertext, distributionMessages } = encryptedData;
+                const { forumId, mainCiphertext, distributionMessages } = encryptedData;
                 
                 //Kiểm tra đủ dữ liệu không
                 if (!forumId || !mainCiphertext || !distributionMessages) return

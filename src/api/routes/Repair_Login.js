@@ -9,7 +9,7 @@ const {handleLogin}= require("./CheckAndGetData")
 const {
   getUserById,
   SetInforUser,
-} = require("../../mysql/dbUser");
+} = require("../models/dbUser");
 
 ;
 

@@ -1,44 +1,23 @@
 {
-  "name": "internal_information_exchange_forum",
-  "version": "1.0.0",
-  "description": "Mô tả chung...",
-  "main": "server/index.js",
-  "directories": {
-    "doc": "docs"
+  "type": "commonjs",
+  "devDependencies": {
+    "nodemon": "^3.1.10",
+    "vite": "^7.0.4"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start:certs": "npm install && node server/creat-cer.js",
-    "start:be": "node server/BE_server.js",
-    "start:fe": "node server/FE_server.js",
-    "dev:be": "nodemon server/BE_server.js",
-    "dev:fe": "nodemon server/FE_server.js"
+    "dev:be": "nodemon src/api/server.js",
+    "dev:fe": "vite",
+    "build": "vite build"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^6.7.2",
     "@google-cloud/local-auth": "^3.0.1",
-    "@privacyresearch/libsignal-protocol-typescript": "^0.0.16",
-    "@sendgrid/mail": "^7.7.0",
+    "@sendgrid/mail": "^8.1.5",
     "bcrypt": "^6.0.0",
-    "body-parser": "^1.20.3",
     "cookie-parser": "^1.4.7",
-    "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
-    "express": "^4.21.2",
-    "googleapis": "^149.0.0",
+    "express": "^5.1.0",
+    "googleapis": "^152.0.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.15.0",
-    "multer": "^2.0.1",
-    "mysql2": "^3.14.1",
-    "nodemailer": "^7.0.3",
-    "react-router-dom": "^7.6.1",
-    "seedrandom": "^3.0.5",
+    "mysql2": "^3.14.2",
     "socket.io": "^4.8.1"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.10"
   }
 }
