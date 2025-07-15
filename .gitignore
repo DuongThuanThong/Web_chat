@@ -1,6 +1,4 @@
 node_modules/
-server/certs
-server/token.json
-server/credentials.json
+certs/*
 uploads/*
 
