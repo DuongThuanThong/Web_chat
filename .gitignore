@@ -15,6 +15,9 @@ backend/dist/
 # Certificates & uploads
 backend/certs/*
 !backend/certs/.gitkeep
+!backend/certs/*.example.json
+
+
 backend/uploads/*
 !backend/uploads/.gitkeep
 
