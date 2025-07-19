@@ -1,4 +1,31 @@
+# Node modules
 node_modules/
-certs/*
-uploads/*
+backend/node_modules/
+frontend/node_modules/
 
+# Build output
+dist/
+frontend/dist/
+backend/dist/
+
+# Environment files
+.env
+.env.*
+
+# Certificates & uploads
+backend/certs/*
+!backend/certs/.gitkeep
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Logs
+*.log
+npm-debug.log*
+
+# IDE/editor
+.vscode/
+.DS_Store
+
+
+# Local SSL tool
+mkcert.exe

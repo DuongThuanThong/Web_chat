@@ -1,13 +1,10 @@
 {
   "type": "commonjs",
   "devDependencies": {
-    "nodemon": "^3.1.10",
-    "vite": "^7.0.4"
+    "nodemon": "^3.1.10"
   },
   "scripts": {
-    "dev:be": "nodemon src/api/server.js",
-    "dev:fe": "vite",
-    "build": "vite build"
+    "dev": "nodemon src/server.js"
   },
   "dependencies": {
     "@google-cloud/local-auth": "^3.0.1",
