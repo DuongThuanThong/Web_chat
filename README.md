@@ -1,8 +1,12 @@
-# Tài liệu dự án WebChat
+# Secure Chat App
+
+Ứng dụng chat thời gian thực với mã hóa đầu cuối (E2EE) dựa trên Signal Protocol. Dự án được tổ chức theo mô hình **monorepo** gồm backend và frontend.
+
+Tài liệu kiến trúc chi tiết: [docs/architecture.md](docs/architecture.md)
 
 ## Cấu trúc thư mục
 
-### Backend (`src/api/`)
+### Backend (`backend/`)
 - **config.js**: Cấu hình chung cho backend.
 - **middleware/**: Chứa các middleware để xử lý yêu cầu.
 - **models/**: Các mô hình và truy vấn cơ sở dữ liệu.
@@ -12,7 +16,7 @@
 - **server.js**: Điểm khởi đầu của server backend.
 - **socket.js**: Xử lý giao tiếp thời gian thực với Socket.IO.
 
-### Frontend (`src/client/`)
+### Frontend (`frontend/`)
 - **css/**: Chứa các file CSS.
 - **images/**: Chứa hình ảnh tĩnh.
 - **js/**: Chứa logic frontend.
